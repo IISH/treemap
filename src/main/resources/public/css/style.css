@@ -1,0 +1,122 @@
+.page-header {
+    display: table;
+    width: 100%;
+    padding: 10px;
+    margin: 0 0 10px;
+}
+
+i.glyphicon-info-sign {
+    cursor: help;
+}
+
+h1 {
+    display: table-cell;
+    width: 50%;
+    margin: 0;
+}
+
+#url {
+    white-space: nowrap;
+    overflow-x: scroll;
+}
+
+#download {
+    display: table-cell;
+    width: 50%;
+    vertical-align: middle;
+}
+
+#info {
+    font-style: italic;
+}
+
+#filters .year {
+    padding-left: 5px;
+    font-style: italic;
+    color: dodgerblue;
+}
+
+#filters .checkbox-inline {
+    padding-top: 4px;
+}
+
+#filters .min-label, #filters .max-label {
+    font-style: italic;
+}
+
+#filters .min-label {
+    padding-right: 20px;
+}
+
+#filters .max-label {
+    padding-left: 20px;
+}
+
+#filters button {
+    margin-top: 3px;
+    margin-left: 20px;
+}
+
+#values {
+    margin: 20px 0;
+}
+
+#values-toggle {
+    text-align: center;
+    font-weight: bold;
+    color: #5580B7;
+    cursor: pointer;
+}
+
+#values-container {
+    margin-top: 10px;
+}
+
+#values-container .column {
+    font-weight: 700;
+    font-size: 12px;
+    text-align: center;
+    padding-bottom: 10px;
+    padding-top: 5px;
+}
+
+#values-container .values {
+    text-align: center;
+    column-count: 6;
+    column-gap: 10px;
+    column-rule: 1px dashed #5580B7;
+}
+
+#on-start {
+    text-align: center;
+}
+
+#treemap {
+    text-align: center;
+}
+
+#treemap text {
+    pointer-events: none !important;
+}
+
+#treemap .children rect.parent, #treemap .one-up rect {
+    cursor: pointer !important;
+}
+
+#treemap .children:hover rect.parent {
+    fill: #fff !important;
+    fill-opacity: .5 !important;
+}
+
+.glyphicon-refresh-animate {
+    animation: spin .7s infinite linear;
+}
+
+@keyframes spin {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+    to {
+        transform: scale(1) rotate(360deg);
+    }
+}

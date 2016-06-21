@@ -1,0 +1,462 @@
+# Key in order to upload dataset
+key: MoQx74NBnJlkP0Av3R
+
+# Dataverse API configuration
+dataverse:
+  url: https://datasets.socialhistory.org
+  connectTimeoutMs: 5000
+  readTimeoutMs: 10000
+
+# Cache configuration
+cache:
+  maximumSize: 100
+  maxHoursAccessTime: 12
+
+# Configuration specific to rendering labour relation treemaps
+labour:
+  # Configuration reading labour relation XLSX files
+  xlsx:
+    empty: NA
+    columns:
+      year: year
+      country: country
+      labourRelationLevel1: labour_rel_01
+      labourRelationLevel2: labour_rel_02
+      labourRelationLevel3: labour_rel_03
+  # Configuration creating treemaps for labour relation datasets
+  treemap:
+    empty: Not Available
+    suffix:
+      txt2.1: (2nd)
+      txt3.1: (3rd)
+    multiples:
+      txt1.1: txt1.1.mul
+      txt1.2: txt1.2.mul
+      txt1.3.ext: txt1.3.ext.mul
+      txt2.1: txt2.1.mul
+      txt2.2: txt2.2.mul
+      txt2.3.ext: txt2.3.ext.mul
+      txt3.1: txt3.1.mul
+      txt3.2: txt3.2.mul
+      txt3.3.ext: txt3.3.ext.mul
+
+# Labour relations code translation
+labourRelations:
+  # Labour relation codes
+  codes:
+    1: Cannot work or cannot be expected to work (1)
+    2: Affluent (2)
+    3: Unemployed (3)
+    4a: Leading producers (4a)
+    4b: Kin producers (4b)
+    5: Kin non-producers (5)
+    6: Servants (6)
+    7: Redistributive labourers (7)
+    8: Obligatory labourers (8)
+    9: Indentured tributary labourers (9)
+    10: Tributary serfs (10)
+    11: Tributary slaves (11)
+    12a: Self-employed leading producers (12a)
+    12b: Self-employed kin producers (12b)
+    13: Employers (13)
+    131: Employers (13)
+    132: Employers (13)
+    133: Employers (13)
+    134: Employers (13)
+    14: Wage earners (14)
+    141: Wage earners (14)
+    142: Wage earners (14)
+    143: Wage earners (14)
+    144: Wage earners (14)
+    15: Indentured labour (15)
+    16: Serfs (16)
+    17: Slaves (17)
+    171: Slaves (17)
+    172: Slaves (17)
+    18: Wage earners (18)
+    181: Wage earners (18)
+    182: Wage earners (18)
+    183: Wage earners (18)
+
+  # First level (Type of exchange)
+  level1:
+    - label: Non-working
+      color: "#9BCB41"
+      range:
+        - 1
+        - 3
+    - label: Reciprocal labour
+      color: "#E77347"
+      range:
+        - 4
+        - 7
+    - label: Tributary labour
+      color: "#F389AB"
+      range:
+        - 8
+        - 11
+    - label: Commodified labour
+      color: "#24B186"
+      range:
+        - 12
+        - 18
+
+  # Second level (Goal of production)
+  level2:
+    - label: Non-working
+      range:
+        - 1
+        - 3
+    - label: Reciprocal labour
+      range:
+        - 4
+        - 7
+    - label: Tributary labour
+      range:
+        - 8
+        - 11
+    - label: For the market
+      range:
+        - 12
+        - 17
+    - label: For non-market institutions
+      range:
+        - 18
+        - 18
+
+  # Unknown labour relations
+  unknown:
+    label: Unknown
+    color: "#CFD7E7"
+
+  # Combination of multiple labour relations
+  multiple:
+    label: Multiple
+    color: "#517FB5"
+
+# Configuration of time periods (minYear including, maxYear excluding)
+timePeriods:
+  - timePeriod: 1500
+    minYear: 1425
+    maxYear: 1575
+
+  - timePeriod: 1650
+    minYear: 1575
+    maxYear: 1725
+
+  - timePeriod: 1800
+    minYear: 1725
+    maxYear: 1850
+
+  - timePeriod: 1900
+    minYear: 1850
+    maxYear: 1925
+
+  - timePeriod: 1950
+    minYear: 1925
+    maxYear: 1975
+
+  - timePeriod: 2000
+    minYear: 1975
+    maxYear: 2050
+
+# Mapping countries to continents
+countriesToContinent:
+    "Afghanistan": "Asia"
+    "Albania": "Europe"
+    "Antarctica": "Antarctica"
+    "Algeria": "Africa"
+    "American Samoa (Eastern Samoa)": "Oceania"
+    "Andorra": "Europe"
+    "Angola": "Africa"
+    "Antigua & Barbuda": "North America"
+    "Azerbaijan": "Asia"
+    "Argentina": "South America"
+    "Australia": "Oceania"
+    "Austria": "Europe"
+    "The Bahamas": "North America"
+    "Bahrain": "Asia"
+    "Bangladesh": "Asia"
+    "Armenia": "Asia"
+    "Barbados": "North America"
+    "Belgium": "Europe"
+    "Bermuda": "North America"
+    "Bhutan": "Asia"
+    "Bolivia": "South America"
+    "Bosnia & Herzegovina": "Europe"
+    "Botswana": "Africa"
+    "Bouvet I.": "Antarctica"
+    "Brazil": "South America"
+    "Belize": "North America"
+    "British Indian Ocean Territory": "Asia"
+    "Solomon Is.": "Oceania"
+    "British Virgin Is.": "North America"
+    "Brunei": "Asia"
+    "Bulgaria": "Europe"
+    "Myanmar": "Asia"
+    "Burundi": "Africa"
+    "Belarus": "Europe"
+    "Cambodia": "Asia"
+    "Cameroon": "Africa"
+    "Canada": "North America"
+    "Cape Verde": "Africa"
+    "Cayman Is.": "North America"
+    "Central African Republic": "Africa"
+    "Sri Lanka": "Asia"
+    "Chad": "Africa"
+    "Chile": "South America"
+    "China": "Asia"
+    "Taiwan": "Asia"
+    "Christmas I.": "Asia"
+    "Cocos Is.": "Asia"
+    "Colombia": "South America"
+    "Comoros": "Africa"
+    "Mayotte": "Africa"
+    "Congo": "Africa"
+    "Congo, DRC": "Africa"
+    "Cook Is.": "Oceania"
+    "Costa Rica": "North America"
+    "Croatia": "Europe"
+    "Cuba": "North America"
+    "Cyprus": "Asia"
+    "Czech Republic": "Europe"
+    "Benin": "Africa"
+    "Denmark": "Europe"
+    "Dominica": "North America"
+    "Dominican Republic": "North America"
+    "Ecuador": "South America"
+    "El Salvador": "North America"
+    "Equatorial Guinea": "Africa"
+    "Ethiopia": "Africa"
+    "Eritrea2": "Africa"
+    "Estonia": "Europe"
+    "Faroe Is.": "Europe"
+    "Falkland Is.": "South America"
+    "South Georgia&the South Sandwich Is.": "Antarctica"
+    "Fiji": "Oceania"
+    "Finland": "Europe"
+    "France": "Europe"
+    "French Guiana": "South America"
+    "French Polynesia": "Oceania"
+    "French Southern&Antarctic Lands": "Antarctica"
+    "Djibouti": "Africa"
+    "Gabon": "Africa"
+    "Georgia": "Asia"
+    "The Gambia": "Africa"
+    "Palestine Territories:Gaza Strip": "Asia"
+    "East Germany": "Europe"
+    "West Germany": "Europe"
+    "Germany": "Europe" # TODO: Missing
+    "Ghana": "Africa"
+    "Gibraltar (UK)": "Europe"
+    "Kiribati": "Oceania"
+    "Greece": "Europe"
+    "Greenland": "North America"
+    "Grenada": "North America"
+    "Guadeloupe": "North America"
+    "Guam": "Oceania"
+    "Guatemala": "North America"
+    "Guinea": "Africa"
+    "Guyana": "South America"
+    "Haiti": "North America"
+    "Heard I.&McDonald Is.": "Antarctica"
+    "Vatican City": "Europe"
+    "Honduras": "North America"
+    "Hong Kong (China)": "Asia"
+    "Hungary": "Europe"
+    "Iceland": "Europe"
+    "India": "Asia"
+    "Indonesia": "Asia"
+    "Iran": "Asia"
+    "Iraq": "Asia"
+    "Ireland": "Europe"
+    "Israel": "Asia"
+    "Italy": "Europe"
+    "Cote d 'Ivoire": "Africa"
+    "Jamaica": "North America"
+    "Japan": "Asia"
+    "Kazakhstan": "Asia"
+    "Jordan": "Asia"
+    "Kenya": "Africa"
+    "North Korea": "Asia"
+    "South Korea": "Asia"
+    "Kuwait": "Asia"
+    "Kyrgyzstan": "Asia"
+    "Laos": "Asia"
+    "Lebanon": "Asia"
+    "Lesotho": "Africa"
+    "Latvia": "Europe"
+    "Liberia": "Africa"
+    "Libya": "Africa"
+    "Liechtenstein": "Europe"
+    "Lithuania": "Europe"
+    "Luxembourg": "Europe"
+    "Macau (China)": "Asia"
+    "Madagascar": "Africa"
+    "Malawi": "Africa"
+    "Malaysia": "Asia"
+    "Maldives": "Asia"
+    "Mali": "Africa"
+    "Malta": "Europe"
+    "Martinique": "North America"
+    "Mauritania": "Africa"
+    "Mauritius": "Africa"
+    "Mexico": "North America"
+    "Monaco": "Europe"
+    "Mongolia": "Asia"
+    "Moldova": "Europe"
+    "Montenegro": "Europe"
+    "Montserrat": "North America"
+    "Morocco": "Africa"
+    "Mozambique": "Africa"
+    "Oman": "Asia"
+    "Namibia": "Africa"
+    "Nauru": "Oceania"
+    "Nepal": "Asia"
+    "Netherlands": "Europe"
+    "Netherlands Antilles": "North America"
+    "Aruba": "North America"
+    "Sint Maarten (Neth)": "North America"
+    "Bonaire (Neth)": "North America"
+    "Saba (Neth)": "North America"
+    "Sint Eustatius (Neth)": "North America"
+    "New Caledonia": "Oceania"
+    "Vanuatu": "Oceania"
+    "New Zealand": "Oceania"
+    "Nicaragua": "North America"
+    "Niger": "Africa"
+    "Nigeria": "Africa"
+    "Niue": "Oceania"
+    "Norfolk Islands": "Oceania"
+    "Norway": "Europe"
+    "Northern Mariana Is.": "Oceania"
+    "Jarvis I.": "Oceania"
+    "Micronesia": "Oceania"
+    "Marshall Is.": "Oceania"
+    "Palau": "Oceania"
+    "Pakistan": "Asia"
+    "Panama": "North America"
+    "Papua New Guinea": "Oceania"
+    "Paraguay": "South America"
+    "Peru": "South America"
+    "Philippines": "Asia"
+    "Pitcairn Is.": "Oceania"
+    "Poland": "Europe"
+    "Portugal": "Europe"
+    "Guinea - Bissau": "Africa"
+    "Timor Leste": "Asia"
+    "Puerto Rico": "North America"
+    "Qatar": "Asia"
+    "Reunion": "Africa"
+    "Romania": "Europe"
+    "Russia": "Europe"
+    "Rwanda": "Africa"
+    "Saint Barthelemy (France)": "North America"
+    "St.Helena": "Africa"
+    "St.Kitts & Nevis": "North America"
+    "Anguilla": "North America"
+    "St.Lucia": "North America"
+    "Saint Martin (France)": "North America"
+    "St.Pierre & Miquelon": "North America"
+    "St.Vincent & the Grenadines": "North America"
+    "San Marino": "Europe"
+    "Sao Tome&Principe": "Africa"
+    "Saudi Arabia": "Asia"
+    "Senegal": "Africa"
+    "Serbia": "Europe"
+    "Seychelles": "Africa"
+    "Sierra Leone": "Africa"
+    "Singapore": "Asia"
+    "Slovakia": "Europe"
+    "Vietnam": "Asia"
+    "Slovenia": "Europe"
+    "Somalia": "Africa"
+    "South Africa": "Africa"
+    "Zimbabwe": "Africa"
+    "Spain": "Europe"
+    "South Sudan": "Africa"
+    "Sudan": "Africa"
+    "Western Sahara": "Africa"
+    "Suriname": "South America"
+    "Jan Mayen": "Europe"
+    "Jan Mayen (Norway)": "Europe"
+    "Swaziland": "Africa"
+    "Sweden": "Europe"
+    "Switzerland": "Europe"
+    "Syria": "Asia"
+    "Tajikistan": "Asia"
+    "Thailand": "Asia"
+    "Togo": "Africa"
+    "Tokelau": "Oceania"
+    "Tonga": "Oceania"
+    "Trinidad & Tobago": "North America"
+    "United Arab Emirates": "Asia"
+    "Tunisia": "Africa"
+    "Turkey": "Europe"
+    "Turkmenistan": "Asia"
+    "Turks & Caicos Is.": "North America"
+    "Tuvalu": "Oceania"
+    "Uganda": "Africa"
+    "Ukraine": "Europe"
+    "Macedonia": "Europe"
+    "Egypt": "Africa"
+    "United Kingdom": "Europe"
+    "Guernsey": "Europe"
+    "Jersey": "Europe"
+    "Isle of Man": "Europe"
+    "Tanzania": "Africa"
+    "United States": "North America"
+    "USA": "North America" # TODO: Missing
+    "Virgin Is.": "North America"
+    "Burkina Faso": "Africa"
+    "Uruguay": "South America"
+    "Uzbekistan": "Asia"
+    "Venezuela": "South America"
+    "Wallis & Futuna": "Oceania"
+    "Samoa": "Oceania"
+    "Yemen": "Asia"
+    "Zambia": "Africa"
+    "Akrotiri(UK)": "Europe"
+    "Ashmore & Cartier Islands(Australia)": "Oceania"
+    "Clipperton Island (France)": "North America"
+    "Coral Sea Islands (Australia)": "Oceania"
+    "Dhekelia (UK)": "Europe"
+    "In dispute Belize / Honduras": "North America"
+    "In dispute Benin / Burkina Faso": "Africa"
+    "In dispute Bhutan / China": "Asia"
+    "In dispute Brazil / Uruguay": "South America"
+    "In dispute Canada / Denmark": "North America"
+    "In dispute China / India": "Asia"
+    "In dispute China / Japan / Taiwan": "Asia"
+    "In dispute China / Philippines / Taiwan": "Asia"
+    "In dispute Comoros / Mayotte / Madagascar": "Africa"
+    "In dispute Croatia / Slovenia": "Europe"
+    "In dispute Djibouti / Eritrea": "Africa"
+    "In dispute Egypt / Saudi Arabia": "Asia"
+    "In dispute El Salvador/Honduras": "North America"
+    "In dispute Equatorial Guinea/Gabon": "Africa"
+    "In dispute India / Nepal": "Asia"
+    "In dispute India / Pakistan": "Asia"
+    "In dispute Iran / United Arab Emirates": "Asia"
+    "In dispute Japan / Russia": "Asia"
+    "In dispute Japan / South Korea": "Asia"
+    "In dispute Morocco / Spain": "Africa"
+    "In dispute South Sudan/Sudan": "Africa"
+    "In dispute Spratly Islands": "Asia"
+    "In dispute -Paracel Islands": "Asia"
+    "Korean islands under UN jurisdiction": "Asia"
+    "Kosovo": "Europe"
+    "Navassa Island (US)": "North America"
+    "No Man 's Land-ISRAEL/West Bank": "Asia"
+    "Ceylon": "Asia"
+    "China (Ming empire)": "Asia"
+    "China (Territory of the Qing dynasty)": "Asia"
+    "China (without Xinjiang, Manchuria, Mongolia)": "Asia"
+    "India (Deccan: Dharwar)": "Asia"
+    "India (Deccan: Khandesh)": "Asia"
+    "India (Deccan: Poona)": "Asia"
+    "Kyrgyz Republic": "Asia"
+    "Libia (Italian and Foreign Population)": "Africa"
+    "Palestine": "Asia"
+    "Republic of Venice": "Europe"
+    "Saint Lucia": "North America"
