@@ -208,7 +208,7 @@ public class LabourTreeMapBuilder {
         if (request.queryParams("multiples") != null)
             treemapBuilder.setMultiples(config.labour.treemap.multiples);
 
-        return treemapBuilder.getTreeMap("Labour relations");
+        return treemapBuilder.getTreeMap("Total population");
     }
 
     /**

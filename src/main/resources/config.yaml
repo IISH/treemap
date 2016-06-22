@@ -25,7 +25,7 @@ labour:
       labourRelationLevel3: labour_rel_03
   # Configuration creating treemaps for labour relation datasets
   treemap:
-    empty: Not Available
+    empty: Not applicable
     suffix:
       txt2.1: (2nd)
       txt3.1: (3rd)
@@ -63,20 +63,20 @@ labourRelations:
     132: Employers (13)
     133: Employers (13)
     134: Employers (13)
-    14: Wage earners (14)
-    141: Wage earners (14)
-    142: Wage earners (14)
-    143: Wage earners (14)
-    144: Wage earners (14)
+    14: Wage earners for the market (14)
+    141: Wage earners for the market (14)
+    142: Wage earners for the market (14)
+    143: Wage earners for the market (14)
+    144: Wage earners for the market (14)
     15: Indentured labour (15)
     16: Serfs (16)
     17: Slaves (17)
     171: Slaves (17)
     172: Slaves (17)
-    18: Wage earners (18)
-    181: Wage earners (18)
-    182: Wage earners (18)
-    183: Wage earners (18)
+    18: Wage earners for non-market institutions (18)
+    181: Wage earners for non-market institutions (18)
+    182: Wage earners for non-market institutions (18)
+    183: Wage earners for non-market institutions (18)
 
   # First level (Type of exchange)
   level1:
@@ -137,11 +137,11 @@ labourRelations:
 # Configuration of time periods (minYear including, maxYear excluding)
 timePeriods:
   - timePeriod: 1500
-    minYear: 1425
-    maxYear: 1575
+    minYear: 1300
+    maxYear: 1580
 
   - timePeriod: 1650
-    minYear: 1575
+    minYear: 1580
     maxYear: 1725
 
   - timePeriod: 1800

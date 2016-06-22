@@ -77,6 +77,14 @@ function Treemap(d3) {
             .attr("y", 6)
             .attr("dy", ".75em");
 
+        oneUp.append("text")
+            .attr("x", width - 6)
+            .attr("y", 6)
+            .attr("dy", ".75em")
+            .attr("text-anchor", "end")
+            .text("Click to move one level up")
+            .style("font-style", "italic");
+
         information = svg.append("g")
             .attr("class", "information")
             .attr("transform", "translate(0," + (legendHeight + oneUpHeight + treemapHeight) + ")");
@@ -294,7 +302,7 @@ function Treemap(d3) {
     var setUpOneUp = function (d) {
         oneUp.datum(d.parent)
             .on("click", transition)
-            .select("text").text('Breadcrumb: ' + name(d));
+            .select("text").text(name(d));
     };
 
     var getBoxes = function (d, newDepth) {
@@ -350,7 +358,8 @@ function Treemap(d3) {
             'fill': '#fff',
             'stroke': '#000',
             'stroke-width': '2px',
-            'paint-order': 'stroke'
+            'paint-order': 'stroke',
+            'font-size': '12px'
         });
         svg.selectAll('rect.parent').style('stroke-width', '2px');
         svg.selectAll('.children rect.parent').style('fill', 'none');
@@ -411,6 +420,7 @@ function Treemap(d3) {
                 name: cur.name,
                 suffix: cur.suffix,
                 size: cur.size,
+                color: cur.color,
                 sizeLast: d.size,
                 scale: d3.scale.linear()
                     .domain([0, cur.size])
@@ -425,6 +435,12 @@ function Treemap(d3) {
             .domain([0, total])
             .range([0, popoverWidth]);
 
+        information.append('text')
+            .attr("x", 15)
+            .attr("y", 25)
+            .text("Frequency and percentage")
+            .style("font-weight", "bold");
+
         information.selectAll()
             .data(branchesLeft)
             .enter().append("rect")
@@ -432,7 +448,7 @@ function Treemap(d3) {
             .attr("height", 5)
             .attr("x", 10)
             .attr("y", function (d, i) {
-                return 30 + (i * 35);
+                return 60 + (i * 35);
             })
             .attr("fill", "lightgrey");
 
@@ -445,21 +461,30 @@ function Treemap(d3) {
             .attr("height", 5)
             .attr("x", 10)
             .attr("y", function (d, i) {
-                return 30 + (i * 35);
+                return 60 + (i * 35);
             })
-            .attr("fill", "#5580B7");
+            .attr("fill", function (d) {
+                var color = determineColor(d);
+                return (color) ? color : '#5580B7';
+            });
 
         information.selectAll()
             .data(branchesLeft)
             .enter().append("text")
             .attr("x", 15)
             .attr("y", function (d, i) {
-                return 25 + (i * 35);
+                return 55 + (i * 35);
             })
             .text(function (d) {
                 var percentage = Math.round(d.size * 10000 / total) / 100;
                 return determineName(d) + " (" + format(d.size) + " / " + percentage + "%)";
             });
+
+        information.append('text')
+            .attr("x", popoverWidth + 30)
+            .attr("y", 25)
+            .text("Relative percentage")
+            .style("font-weight", "bold");
 
         information.selectAll()
             .data(branchesRight)
@@ -468,7 +493,7 @@ function Treemap(d3) {
             .attr("height", 5)
             .attr("x", popoverWidth + 30)
             .attr("y", function (d, i) {
-                return 30 + (i * 35);
+                return 60 + (i * 35);
             })
             .attr("fill", "lightgrey");
 
@@ -481,16 +506,19 @@ function Treemap(d3) {
             .attr("height", 5)
             .attr("x", popoverWidth + 30)
             .attr("y", function (d, i) {
-                return 30 + (i * 35);
+                return 60 + (i * 35);
             })
-            .attr("fill", "#5580B7");
+            .attr("fill", function (d) {
+                var color = determineColor(d);
+                return (color) ? color : '#5580B7';
+            });
 
         information.selectAll()
             .data(branchesRight)
             .enter().append("text")
             .attr("x", popoverWidth + 30)
             .attr("y", function (d, i) {
-                return 25 + (i * 35);
+                return 55 + (i * 35);
             })
             .text(function (d2) {
                 var percentage = Math.round(d2.sizeLast * 10000 / d2.size) / 100;

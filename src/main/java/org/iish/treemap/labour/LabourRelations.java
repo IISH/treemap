@@ -55,7 +55,7 @@ public class LabourRelations {
      * @return The level 1 labour relation.
      */
     public String getLevel1(String values, boolean combineMultiples) {
-        return getMapping(values, level1, unknownLabel, combineMultiples ? null : multipleLabel, ", ");
+        return getMapping(values, level1, unknownLabel, combineMultiples ? null : multipleLabel, " or ");
     }
 
     /**
@@ -66,7 +66,7 @@ public class LabourRelations {
      * @return The level 2 labour relation.
      */
     public String getLevel2(String values, boolean combineMultiples) {
-        return getMapping(values, level2, unknownLabel, combineMultiples ? null : multipleLabel, ", ");
+        return getMapping(values, level2, unknownLabel, combineMultiples ? null : multipleLabel, " or ");
     }
 
     /**
@@ -77,7 +77,7 @@ public class LabourRelations {
      * @return The level 3 labour relation.
      */
     public String getLevel3(String values, boolean combineMultiples) {
-        return getMapping(values, level3, unknownLabel, combineMultiples ? null : multipleLabel, ", ");
+        return getMapping(values, level3, unknownLabel, combineMultiples ? null : multipleLabel, " or ");
     }
 
     /**
@@ -115,6 +115,7 @@ public class LabourRelations {
             return null;
 
         List<String> relations = Arrays.stream(values.split("0(?!0)"))
+                .sorted()
                 .map((String value) -> mapping.getOrDefault(value, unknown))
                 .distinct()
                 .collect(Collectors.toList());
@@ -125,7 +126,6 @@ public class LabourRelations {
         if (multiple != null)
             return multiple;
 
-        Collections.sort(relations);
         return String.join(delimiter, relations);
     }
 
