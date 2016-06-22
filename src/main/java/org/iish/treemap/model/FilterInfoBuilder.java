@@ -58,10 +58,10 @@ public class FilterInfoBuilder {
             List<BigDecimal> numbers = values.stream().map(Utils::getBigDecimal).collect(Collectors.toList());
 
             if (!useValuesFilters && numbers.stream().allMatch(value -> value != null)) {
-                BigDecimal min = numbers.stream().min(BigDecimal::compareTo).get();
-                BigDecimal max = numbers.stream().max(BigDecimal::compareTo).get();
+                BigDecimal min = numbers.stream().min(BigDecimal::compareTo).orElse(null);
+                BigDecimal max = numbers.stream().max(BigDecimal::compareTo).orElse(null);
 
-                if (min.compareTo(max) != 0)
+                if ((min != null) && (max != null) && (min.compareTo(max) != 0))
                     filterInfoList.add(new RangeFilterInfo(column, min, max));
             }
             else {

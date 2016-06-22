@@ -294,7 +294,7 @@ function Treemap(d3) {
     var setUpOneUp = function (d) {
         oneUp.datum(d.parent)
             .on("click", transition)
-            .select("text").text(name(d));
+            .select("text").text('Breadcrumb: ' + name(d));
     };
 
     var getBoxes = function (d, newDepth) {
