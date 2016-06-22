@@ -143,6 +143,8 @@ public class Application implements SparkApplication {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(path));
             objectOutputStream.writeObject(data);
             objectOutputStream.close();
+
+            standardDataset.setDataset(data);
         }
 
         res.redirect("/index.html");
