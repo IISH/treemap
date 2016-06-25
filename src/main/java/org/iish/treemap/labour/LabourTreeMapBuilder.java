@@ -33,7 +33,6 @@ public class LabourTreeMapBuilder {
     private LabourRelations labourRelations;
     private TimePeriods timePeriods;
     private Cache<String, TabularData> cache;
-    private FilterInfoBuilder filterInfoBuilder;
 
     /**
      * Labour relations treemap builder.
@@ -55,7 +54,6 @@ public class LabourTreeMapBuilder {
         this.labourRelations = labourRelations;
         this.timePeriods = timePeriods;
         this.cache = cache;
-        this.filterInfoBuilder = new FilterInfoBuilder(config.labour.treemap.empty, Collections.singleton("bmyear"));
     }
 
     /**
@@ -88,15 +86,14 @@ public class LabourTreeMapBuilder {
      * @return The labour relations treemap information.
      * @throws LabourTreemapException When no treemap could be build.
      */
-    public LabourTreemapInfo getTreemap(Request request) throws LabourTreemapException {
+    public TreemapInfo getTreemap(Request request) throws LabourTreemapException {
         TabularData data = getTabularData(request);
         TabularData filterData = filterData(request, data);
 
         Treemap treemap = buildTreemap(request, filterData);
         List<FilterInfo> filterInfo = buildFilterInfo(request, filterData);
-        Map<String, String> timePeriods = this.timePeriods.getTimePeriodsFor(filterData);
 
-        return new LabourTreemapInfo(treemap, filterInfo, labourRelations.getLegend(), timePeriods);
+        return new TreemapInfo(treemap, filterInfo, labourRelations.getLegend());
     }
 
     /**
@@ -118,7 +115,7 @@ public class LabourTreeMapBuilder {
                 if (data != null) {
                     datasets.add(data);
                 }
-                else {
+                else if (fileId.matches("\\d+")) {
                     InputStream inputStream = dataverseApiClient.getFileById(new Long(fileId));
                     LabourRelationsXlsxReader xlsxReader = new LabourRelationsXlsxReader(
                             this.config, this.labourRelations, this.timePeriods, inputStream);
@@ -220,12 +217,14 @@ public class LabourTreeMapBuilder {
      */
     private List<FilterInfo> buildFilterInfo(Request request, TabularData data) {
         String[] filterInfoArr = request.queryParamsValues("filterInfo");
-        List<String> filter = (filterInfoArr != null) ? Arrays.asList(filterInfoArr) : Collections.emptyList();
+        List<String> filter = new ArrayList<>((filterInfoArr != null)
+                ? Arrays.asList(filterInfoArr) : Collections.emptyList());
 
-        filter = new ArrayList<>(filter);
         if (filter.contains("bmyear"))
             filter.add("year");
 
-        return filterInfoBuilder.getFilterInfo(data, Utils.filterOutEmpty(filter));
+        FilterInfoBuilder filterInfoBuilder = new LabourFilterInfoBuilder(
+                data, config.labour.treemap.empty, Collections.singleton("bmyear"), timePeriods);
+        return filterInfoBuilder.getFilterInfo(Utils.filterOutEmpty(filter));
     }
 }

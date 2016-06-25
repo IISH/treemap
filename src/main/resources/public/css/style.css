@@ -30,12 +30,6 @@ h1 {
     font-style: italic;
 }
 
-#filters .year {
-    padding-left: 5px;
-    font-style: italic;
-    color: dodgerblue;
-}
-
 #filters .checkbox-inline {
     padding-top: 4px;
 }
@@ -81,10 +75,34 @@ h1 {
 }
 
 #values-container .values {
+    font-weight: 700;
+    font-size: 12px;
     text-align: center;
+}
+
+#values-container ul.values {
     column-count: 6;
     column-gap: 10px;
     column-rule: 1px dashed #5580B7;
+}
+
+#values-container ul.values > li {
+    overflow: hidden;
+    break-inside: avoid-column;
+    -webkit-column-break-inside: avoid;
+}
+
+#values-container ul.years {
+    font-style: italic;
+    color: dodgerblue;
+    font-weight: normal;
+    font-size: 11px;
+    margin-bottom: 5px;
+}
+
+#values-container div.values {
+    font-style: italic;
+    font-weight: normal;
 }
 
 #on-start {

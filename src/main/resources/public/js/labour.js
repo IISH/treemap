@@ -25,7 +25,6 @@
     $('#on-start').click(function () {
         render = true;
         treemap.loadFromUrl(getTreemapUrlWithFilters(), function (treemapInfo) {
-            updateTimePeriods(treemapInfo.timePeriods);
             updateValues(treemapInfo.filterInfo);
 
             $('#on-start').slideUp();
@@ -44,7 +43,6 @@
 
     treemap.getTreemapInfo('treemap' + window.location.search, function (treemapInfo) {
         filterForm(treemapInfo.filterInfo);
-        updateTimePeriods(treemapInfo.timePeriods);
         updateValues(treemapInfo.filterInfo);
     });
 
@@ -138,7 +136,6 @@
     function reload() {
         if (render) {
             treemap.loadFromUrl(getTreemapUrlWithFilters(), function (treemapInfo) {
-                updateTimePeriods(treemapInfo.timePeriods);
                 updateValues(treemapInfo.filterInfo);
             });
         }
@@ -152,42 +149,39 @@
         return 'treemap' + query;
     }
 
-    function updateTimePeriods(timePeriods) {
-        $('input[name=filter\\:bmyear]').each(function () {
-            var input = $(this);
-            var year = timePeriods[input.val()];
-            if (year !== undefined) {
-                var label = input.closest('label');
-
-                var span = label.find('span.year');
-                if (span.length === 0) {
-                    span = $('<span class="year"></span>').appendTo(label);
-                }
-
-                span.text('(' + year + ')');
-            }
-        });
-    }
-
     function updateValues(filterInfo) {
         var html = '';
-        filterInfo.forEach(function (info) {
-            if (info.column !== 'bmyear') {
-                html += '<div>';
-                html += '<div class="column">All values for ' + info.column + ':</div>';
-                if (info.values) {
-                    html += '<ul class="values list-unstyled">';
-                    info.values.sort().forEach(function (value) {
-                        html += '<li>' + value + '</li>';
-                    });
-                    html += '</ul>';
-                }
-                else {
-                    html += '<div class="text-center"><em>Ranges from ' + info.min + ' to ' + info.max + '</em></div>';
+        filterInfo.forEach(function (info) {            
+            html += '<div>';
+            html += '<div class="column">All values for ' + info.column + ':</div>';
+            if (info.values) {
+                html += '<ul class="values list-unstyled">';
+                info.values.sort().forEach(function (value) {
+                    html += '<li>';
+                    html += value;
 
-                }
-                html += '</div>';
+                    var timePeriods = info.timePeriods[value];
+                    if (timePeriods) {
+                        html += '<ul class="years list-unstyled">';
+                        for (var key in timePeriods) {
+                            if (timePeriods.hasOwnProperty(key)) {
+                                html += '<li class="year">';
+                                html += key + ': ' + timePeriods[key];
+                                html += '</li>';
+                            }
+                        }
+                        html += '</ul>';
+                    }
+
+                    html += '</li>';
+                });
+                html += '</ul>';
             }
+            else {
+                html += '<div class="values">Ranges from ' + info.min + ' to ' + info.max + '</div>';
+
+            }
+            html += '</div>';
         });
         valuesContainer.html(html);
     }

@@ -42,10 +42,11 @@ public class TimePeriods {
     /**
      * Returns a list with all the time periods for the years in the given data set.
      *
-     * @param tabularData The data set.
+     * @param tabularData  The data set.
+     * @param includeEmpty Whether to include empty values.
      * @return The years and their matching time periods.
      */
-    public Map<String, String> getTimePeriodsFor(TabularData tabularData) {
+    public Map<String, String> getTimePeriodsFor(TabularData tabularData, boolean includeEmpty) {
         Map<String, String> matchingTimePeriods = new LinkedHashMap<>();
         for (TimePeriod tp : timePeriods) {
             Optional<Integer> result = tabularData.getRows().stream()
@@ -61,7 +62,7 @@ public class TimePeriods {
 
             if ((minYear != null) && tp.isWithinTimePeriod(minYear)) // (Math.abs(tp.getTimePeriod() - minYear) < 75)
                 matchingTimePeriods.put(tp.getTimePeriodString(), String.valueOf(minYear));
-            else
+            else if (includeEmpty)
                 matchingTimePeriods.put(tp.getTimePeriodString(), empty);
         }
         return matchingTimePeriods;
