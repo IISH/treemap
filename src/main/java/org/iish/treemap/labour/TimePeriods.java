@@ -49,7 +49,7 @@ public class TimePeriods {
     public Map<String, String> getTimePeriodsFor(TabularData tabularData, boolean includeEmpty) {
         Map<String, String> matchingTimePeriods = new LinkedHashMap<>();
         for (TimePeriod tp : timePeriods) {
-            Optional<Integer> result = tabularData.getRows().stream()
+            Optional<Integer> minYear = tabularData.getRows().stream()
                     .filter(row -> Utils.getInteger(tabularData.getValue("year", row)) != null)
                     .map(row -> {
                         int year = Utils.getInteger(tabularData.getValue("year", row));
@@ -58,10 +58,9 @@ public class TimePeriods {
                     })
                     .min(Comparator.comparingInt(AbstractMap.SimpleEntry::getValue))
                     .map(AbstractMap.SimpleEntry::getKey);
-            Integer minYear = result.isPresent() ? result.get() : null;
 
-            if ((minYear != null) && tp.isWithinTimePeriod(minYear)) // (Math.abs(tp.getTimePeriod() - minYear) < 75)
-                matchingTimePeriods.put(tp.getTimePeriodString(), String.valueOf(minYear));
+            if (minYear.isPresent() && tp.isWithinTimePeriod(minYear.get()))
+                matchingTimePeriods.put(tp.getTimePeriodString(), String.valueOf(minYear.get()));
             else if (includeEmpty)
                 matchingTimePeriods.put(tp.getTimePeriodString(), empty);
         }

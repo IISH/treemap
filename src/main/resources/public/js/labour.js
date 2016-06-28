@@ -82,7 +82,7 @@
                             html += '</label>';
                         });
                         html += '<button type="button" class="btn btn-default btn-xs unselect-all">';
-                        html += 'Unselect all</button>';
+                        html += 'Reset all</button>';
                         html += '</div>';
                     }
                     else {

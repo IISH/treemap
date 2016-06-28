@@ -83,7 +83,8 @@ function Treemap(d3) {
             .attr("dy", ".75em")
             .attr("text-anchor", "end")
             .text("Click to move one level up")
-            .style("font-style", "italic");
+            .style("font-style", "italic")
+            .style("font-size", "12px");
 
         information = svg.append("g")
             .attr("class", "information")
