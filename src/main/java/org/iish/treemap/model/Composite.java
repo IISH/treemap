@@ -12,11 +12,12 @@ public class Composite extends Treemap {
     /**
      * Creates a composite of a treemap representation.
      *
-     * @param column The column which represents the current hierarchy.
-     * @param name   The name of the current hierarchy.
+     * @param originalColumn The original column which represents the current hierarchy.
+     * @param column         The column which represents the current hierarchy.
+     * @param name           The name of the current hierarchy.
      */
-    public Composite(String column, String name) {
-        super(column, name);
+    public Composite(String originalColumn, String column, String name) {
+        super(originalColumn, column, name);
         this.children = new ArrayList<>();
     }
 

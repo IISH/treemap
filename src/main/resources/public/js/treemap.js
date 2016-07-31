@@ -7,7 +7,7 @@ function Treemap(d3) {
         width = 1120,
         height = 850,
         treemapHeight = height - legendHeight - oneUpHeight - informationHeight,
-        format = d3.format("0,000"),
+        format = d3.format(','),
         transitioning, depth, node;
 
     var x = d3.scale.linear()
@@ -104,7 +104,7 @@ function Treemap(d3) {
     setUpSVG();
 
     // -------------------------------------------------------------------------------------------------------- //
-    
+
     this.loadFromUrl = function (url, callback) {
         d3.json(url, function (error, treemapInfo) {
             if (error) throw error;
@@ -118,7 +118,7 @@ function Treemap(d3) {
 
     this.getTreemapInfo = function (url, callback) {
         d3.json(url, function (error, treemapInfo) {
-            if (error) throw error;            
+            if (error) throw error;
             callback(treemapInfo);
         });
     };
@@ -184,7 +184,7 @@ function Treemap(d3) {
         accumulate(root);
         layout(root);
 
-        var newDepth = false; // TODO: findSameDepth(root);
+        var newDepth = findSameDepth(root);
         transition((newDepth !== false) ? newDepth : root);
     };
 
@@ -231,7 +231,7 @@ function Treemap(d3) {
 
     var findSameDepth = function (d) {
         if (d && node) {
-            if ((d.column === node.column) && (d.name === node.name))
+            if ((d.originalColumn === node.originalColumn) && (d.name === node.name))
                 return d;
             else if (d._children) {
                 for (var i = 0; i < d._children.length; i++) {
@@ -250,7 +250,7 @@ function Treemap(d3) {
         if (transitioning || !d) return;
         if (depth) transitionChange(true);
 
-        var isNewDepth = (!node || (d.column !== node.column) || (d.name !== node.name));
+        var isNewDepth = (!node || (d.originalColumn !== node.originalColumn) || (d.name !== node.name));
         node = d;
 
         if (depth && isNewDepth) {
@@ -295,7 +295,7 @@ function Treemap(d3) {
 
         setupBoxes(boxes, newBoxes, childBoxes);
         applyStyling();
-        animateBoxes(boxes, newBoxes, childBoxes, withTransitions);
+        animateBoxes(d, boxes, newBoxes, childBoxes, withTransitions);
 
         return boxes;
     };
@@ -366,8 +366,11 @@ function Treemap(d3) {
         svg.selectAll('.children rect.parent').style('fill', 'none');
     };
 
-    var animateBoxes = function (boxes, newBoxes, childBoxes, withTransitions) {
+    var animateBoxes = function (d, boxes, newBoxes, childBoxes, withTransitions) {
         if (withTransitions) {
+            x.domain([d.x, d.x + d.dx]);
+            y.domain([d.y, d.y + d.dy]);
+
             childBoxes.transition().duration(750).call(rect);
             boxes.select('.parent').transition().duration(750).call(rect);
             var resize = boxes.select('text').transition().duration(750).call(text);
@@ -546,7 +549,7 @@ function Treemap(d3) {
     };
 
     var key = function (d) {
-        return d.column + '_' + d.name;
+        return d.originalColumn + '_' + d.name;
     };
 
     var text = function (text) {
@@ -605,7 +608,7 @@ function Treemap(d3) {
             name += (" " + d.suffix);
         return name;
     };
-    
+
     var determineColor = function (d) {
         if (d.color) {
             if (d.color.indexOf(';') >= 0) {

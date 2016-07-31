@@ -4,6 +4,7 @@ package org.iish.treemap.model;
  * Representation of a treemap.
  */
 public abstract class Treemap {
+    private final String originalColumn;
     private final String column;
     private final String name;
 
@@ -13,12 +14,23 @@ public abstract class Treemap {
     /**
      * Creates a treemap.
      *
-     * @param column The column which represents the current hierarchy.
-     * @param name   The name of the current hierarchy.
+     * @param originalColumn The original column which represents the current hierarchy.
+     * @param column         The column which represents the current hierarchy.
+     * @param name           The name of the current hierarchy.
      */
-    public Treemap(String column, String name) {
+    public Treemap(String originalColumn, String column, String name) {
+        this.originalColumn = originalColumn;
         this.column = column;
         this.name = name;
+    }
+
+    /**
+     * Returns the original column which represents the current hierarchy.
+     *
+     * @return The original column name.
+     */
+    public String getOriginalColumn() {
+        return originalColumn;
     }
 
     /**

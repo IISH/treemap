@@ -34,6 +34,7 @@ public class TreemapBuilder {
         this.sizeColumn = sizeColumn;
         this.emptyVal = emptyVal;
         this.roundSize = false;
+        this.multiples = new HashMap<>();
     }
 
     /**
@@ -61,7 +62,6 @@ public class TreemapBuilder {
      */
     public void setMultiples(Map<String, String> multiples) {
         this.multiples = multiples;
-        updateHierarchyColumns();
     }
 
     /**
@@ -80,7 +80,7 @@ public class TreemapBuilder {
      * @return The treemap.
      */
     public Treemap getTreeMap(String name) {
-        Composite treeMap = new Composite(name, name);
+        Composite treeMap = new Composite(name, name, name);
         addBranch(new LinkedList<>(hierarchyColumns), table.getRows(), treeMap);
         return treeMap;
     }
@@ -93,7 +93,9 @@ public class TreemapBuilder {
      * @param curBranch   The current branch in the treemap.
      */
     private void addBranch(Queue<String> hierarchies, List<Integer> rows, Composite curBranch) {
-        String hierarchy = hierarchies.poll();
+        String originalHierarchy = hierarchies.poll();
+        String hierarchy = multiples.getOrDefault(originalHierarchy, originalHierarchy);
+
         rows.stream()
                 .collect(Collectors.groupingBy(rowIndex -> {
                     String value = table.getValue(hierarchy, rowIndex);
@@ -101,10 +103,10 @@ public class TreemapBuilder {
                 }))
                 .forEach((key, rowIndexes) -> {
                     if (hierarchies.isEmpty())
-                        addLeaf(hierarchy, key, rowIndexes, curBranch);
+                        addLeaf(originalHierarchy, hierarchy, key, rowIndexes, curBranch);
                     else {
-                        Composite nextBranch = new Composite(hierarchy, key);
-                        addSuffix(nextBranch, hierarchy);
+                        Composite nextBranch = new Composite(originalHierarchy, hierarchy, key);
+                        addSuffix(nextBranch, originalHierarchy);
                         addColor(nextBranch, rowIndexes);
 
                         addBranch(new LinkedList<>(hierarchies), rowIndexes, nextBranch);
@@ -117,7 +119,7 @@ public class TreemapBuilder {
                         boolean singleEmptyChild = (isSingleChild && singleChild.getName().equals(emptyVal));
 
                         if (children.isEmpty() || singleEmptyChild)
-                            addLeaf(hierarchy, key, rowIndexes, curBranch);
+                            addLeaf(originalHierarchy, hierarchy, key, rowIndexes, curBranch);
                         else if (singleSameChild)
                             curBranch.addChild(singleChild);
                         else
@@ -129,12 +131,13 @@ public class TreemapBuilder {
     /**
      * Adds a leaf to the treemap.
      *
-     * @param hierarchy The name of the current hiereachy.
-     * @param name      The name of the leaf.
-     * @param rows      The rows of the table.
-     * @param current   The current branch in the treemap.
+     * @param orgHierarchy The name of the current original hierarchy.
+     * @param hierarchy    The name of the current hierarchy.
+     * @param name         The name of the leaf.
+     * @param rows         The rows of the table.
+     * @param current      The current branch in the treemap.
      */
-    private void addLeaf(String hierarchy, String name, List<Integer> rows, Composite current) {
+    private void addLeaf(String orgHierarchy, String hierarchy, String name, List<Integer> rows, Composite current) {
         BigDecimal count = rows.stream()
                 .map(rowIndex -> {
                     String value = table.getValue(sizeColumn, rowIndex);
@@ -146,8 +149,8 @@ public class TreemapBuilder {
         if (roundSize)
             count = count.setScale(0, BigDecimal.ROUND_HALF_UP);
 
-        Leaf leaf = new Leaf(hierarchy, name, count);
-        addSuffix(leaf, hierarchy);
+        Leaf leaf = new Leaf(orgHierarchy, hierarchy, name, count);
+        addSuffix(leaf, orgHierarchy);
         addColor(leaf, rows);
 
         current.addChild(leaf);
@@ -156,12 +159,12 @@ public class TreemapBuilder {
     /**
      * If there is a suffix defined for this hierarchy, add this information to the treemap.
      *
-     * @param node      The treemap.
-     * @param hierarchy The hierarchy.
+     * @param node         The treemap.
+     * @param orgHierarchy The name of the current original hierarchy.
      */
-    private void addSuffix(Treemap node, String hierarchy) {
-        if ((suffixMap != null) && suffixMap.containsKey(hierarchy))
-            node.setSuffix(suffixMap.get(hierarchy));
+    private void addSuffix(Treemap node, String orgHierarchy) {
+        if ((suffixMap != null) && suffixMap.containsKey(orgHierarchy))
+            node.setSuffix(suffixMap.get(orgHierarchy));
     }
 
     /**
@@ -177,17 +180,6 @@ public class TreemapBuilder {
                     .distinct()
                     .collect(Collectors.joining(";"));
             node.setColor(colors);
-        }
-    }
-
-    /**
-     * Updates the hierarchy columns with their multiple column variant if it exists.
-     */
-    private void updateHierarchyColumns() {
-        if (multiples != null) {
-            hierarchyColumns = hierarchyColumns.stream()
-                    .map(hierarchy -> multiples.getOrDefault(hierarchy, hierarchy))
-                    .collect(Collectors.toList());
         }
     }
 }

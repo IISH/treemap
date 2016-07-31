@@ -11,12 +11,13 @@ public class Leaf extends Treemap {
     /**
      * Creates a composite of a treemap representation.
      *
-     * @param column The column which represents the current hierarchy.
-     * @param name   The name of the current hierarchy.
-     * @param size   The size of this leaf of the treemap.
+     * @param originalColumn The original column which represents the current hierarchy.
+     * @param column         The column which represents the current hierarchy.
+     * @param name           The name of the current hierarchy.
+     * @param size           The size of this leaf of the treemap.
      */
-    public Leaf(String column, String name, BigDecimal size) {
-        super(column, name);
+    public Leaf(String originalColumn, String column, String name, BigDecimal size) {
+        super(originalColumn, column, name);
         this.size = size;
     }
 
