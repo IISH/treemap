@@ -46,6 +46,7 @@ public class Config {
 
     public static class Treemap {
         public String empty;
+        public Map<String, String> labels;
         public Map<String, String> suffix;
         public Map<String, String> multiples;
     }

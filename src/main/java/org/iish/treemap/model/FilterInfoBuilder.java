@@ -3,10 +3,7 @@ package org.iish.treemap.model;
 import org.iish.treemap.util.Utils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -16,6 +13,7 @@ public class FilterInfoBuilder {
     private TabularData table;
     private String empty;
     private Set<String> columnsAllValues;
+    private Map<String, String> labels;
 
     /**
      * Creates a builder that creates filter information.
@@ -29,18 +27,28 @@ public class FilterInfoBuilder {
     }
 
     /**
-     * Creates a builder that creates filter information.
+     * Set which columns always should return all values.
      *
-     * @param table            The dataset.
-     * @param empty            The value for empty values.
      * @param columnsAllValues Which columns always should return all values.
      */
-    public FilterInfoBuilder(TabularData table, String empty, Set<String> columnsAllValues) {
-        this.table = table;
-        this.empty = empty;
+    public void setColumnsAllValues(Set<String> columnsAllValues) {
         this.columnsAllValues = columnsAllValues;
     }
 
+    /**
+     * Set the map with labels for columns.
+     *
+     * @param labels The labels for columns.
+     */
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
+    }
+
+    /**
+     * Returns the associated dataset.
+     *
+     * @return The dataset.
+     */
     public TabularData getTable() {
         return table;
     }
@@ -55,6 +63,7 @@ public class FilterInfoBuilder {
         List<FilterInfo> filterInfoList = new ArrayList<>();
         filterColumns.forEach(column -> {
             boolean useValuesFilters = ((columnsAllValues != null) && columnsAllValues.contains(column));
+            String label = labels.getOrDefault(column, null);
 
             Set<String> values = getValues(column);
             Set<BigDecimal> numbers = !useValuesFilters ? getNumbers(values) : null;
@@ -64,11 +73,11 @@ public class FilterInfoBuilder {
                 BigDecimal max = numbers.stream().max(BigDecimal::compareTo).orElse(null);
 
                 if ((min != null) && (max != null) && (min.compareTo(max) != 0)) {
-                    filterInfoList.add(createRangeFilter(column, min, max));
+                    filterInfoList.add(createRangeFilter(column, label, min, max));
                 }
             }
             else {
-                filterInfoList.add(createValuesFilter(column, values));
+                filterInfoList.add(createValuesFilter(column, label, values));
             }
         });
         return filterInfoList;
@@ -106,22 +115,24 @@ public class FilterInfoBuilder {
      * Creates a range filter for the given min and max value.
      *
      * @param column The column on which the filter applies.
+     * @param label  The label for the column.
      * @param min    The minimum value.
      * @param max    The maximum value.
      * @return The range filter.
      */
-    protected RangeFilterInfo createRangeFilter(String column, BigDecimal min, BigDecimal max) {
-        return new RangeFilterInfo(column, min, max);
+    protected RangeFilterInfo createRangeFilter(String column, String label, BigDecimal min, BigDecimal max) {
+        return new RangeFilterInfo(column, label, min, max);
     }
 
     /**
      * Creates a values filter for the given set of values.
      *
      * @param column The column on which the filter applies.
+     * @param label  The label for the column.
      * @param values The values.
      * @return The values filter.
      */
-    protected ValuesFilterInfo createValuesFilter(String column, Set<String> values) {
-        return new ValuesFilterInfo(column, values);
+    protected ValuesFilterInfo createValuesFilter(String column, String label, Set<String> values) {
+        return new ValuesFilterInfo(column, label, values);
     }
 }

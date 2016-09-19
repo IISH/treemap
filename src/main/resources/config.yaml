@@ -26,6 +26,11 @@ labour:
   # Configuration creating treemaps for labour relation datasets
   treemap:
     empty: Not applicable
+    labels:
+      year: Year
+      bmyear: Cross section years
+      continent: Continents
+      country: Countries
     suffix:
       txt2.1: (2nd)
       txt3.1: (3rd)

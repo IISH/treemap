@@ -13,11 +13,12 @@ public class RangeFilterInfo extends FilterInfo {
      * Creates filter information for a column in a dataset.
      *
      * @param column The column.
+     * @param label  The label of the column.
      * @param min    The minimal value to filter on.
      * @param max    The maximal value to filter on.
      */
-    public RangeFilterInfo(String column, BigDecimal min, BigDecimal max) {
-        super(column);
+    public RangeFilterInfo(String column, String label, BigDecimal min, BigDecimal max) {
+        super(column, label);
         this.min = min;
         this.max = max;
     }

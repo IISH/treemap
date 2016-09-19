@@ -57,7 +57,8 @@
 
         var html = '<div class="form-group form-group-sm">';
         html += '<label class="col-sm-2 control-label""><strong>Show multiples ';
-        html += '<i class="glyphicon glyphicon-info-sign" title="' + getTitle('multiples') + '"></i></strong></label>';
+        html += '<i class="glyphicon glyphicon-info-sign" title="' + getTitle('multiples') + '" ';
+        html += 'data-toggle="tooltip" data-placement="bottom"></i></strong></label>';
         html += '<div class="col-sm-8"><label class="checkbox-inline">';
         html += '<input type="checkbox" name="multiples" value="show"/> &nbsp;';
         html += '</label></div></div>';
@@ -65,9 +66,12 @@
 
         filterInfo.forEach(function (filter) {
             if ((location.search.indexOf('filterInfo=' + filter.column) >= 0) && (!filter.values || (filter.values.length > 1))) {
+                var label = (filter.label) ? filter.label : filter.column;
+
                 var html = '<div class="form-group form-group-sm">';
-                html += '<label class="col-sm-2 control-label""><strong>' + filter.column + ' ';
-                html += '<i class="glyphicon glyphicon-info-sign" title="' + getTitle(filter.column, filter) + '"></i>';
+                html += '<label class="col-sm-2 control-label""><strong>' + label + ' ';
+                html += '<i class="glyphicon glyphicon-info-sign" title="' + getTitle(filter.column, filter) + '" ' +
+                    'data-toggle="tooltip" data-placement="bottom"></i>';
                 html += '</strong></label>';
 
                 if (filter.values) {
@@ -151,9 +155,11 @@
 
     function updateValues(filterInfo) {
         var html = '';
-        filterInfo.forEach(function (info) {            
+        filterInfo.forEach(function (info) {
+            var label = (info.label) ? info.label : info.column;
+
             html += '<div>';
-            html += '<div class="column">All values for ' + info.column + ':</div>';
+            html += '<div class="column">All ' + label.toLowerCase() + ':</div>';
             if (info.values) {
                 html += '<ul class="values list-unstyled">';
                 info.values.sort().forEach(function (value) {
@@ -191,9 +197,6 @@
             case 'multiples':
                 return 'Show the various combinations as seperate blocks in the treemap, ' +
                     'or just show a single block containing all multiples.';
-            case 'bmyear':
-                return 'Filter the selection by time period. The year between brackets shows the year ' +
-                    'from the dataset that is closest to the time period.';
             default:
                 if (filter.values) {
                     if (filter.values.length < 10)

@@ -18,26 +18,19 @@ public class LabourFilterInfoBuilder extends FilterInfoBuilder {
     /**
      * Creates a builder that creates filter information.
      *
-     * @param table       The dataset.
-     * @param empty       The value for empty values.
-     * @param timePeriods The time periods.
+     * @param table The dataset.
+     * @param empty The value for empty values.
      */
-    public LabourFilterInfoBuilder(TabularData table, String empty, TimePeriods timePeriods) {
+    public LabourFilterInfoBuilder(TabularData table, String empty) {
         super(table, empty);
-        this.timePeriods = timePeriods;
     }
 
     /**
-     * Creates a builder that creates filter information.
+     * Set the time periods.
      *
-     * @param table            The dataset.
-     * @param empty            The value for empty values.
-     * @param columnsAllValues Which columns always should return all values.
-     * @param timePeriods      The time periods.
+     * @param timePeriods The time periods.
      */
-    public LabourFilterInfoBuilder(TabularData table, String empty, Set<String> columnsAllValues,
-                                   TimePeriods timePeriods) {
-        super(table, empty, columnsAllValues);
+    public void setTimePeriods(TimePeriods timePeriods) {
         this.timePeriods = timePeriods;
     }
 
@@ -46,11 +39,12 @@ public class LabourFilterInfoBuilder extends FilterInfoBuilder {
      * and adds information about the time periods for each possible filter value.
      *
      * @param column The column on which the filter applies.
+     * @param label  The label for the column.
      * @param values The values.
      * @return The values filter.
      */
     @Override
-    protected ValuesFilterInfo createValuesFilter(String column, Set<String> values) {
+    protected ValuesFilterInfo createValuesFilter(String column, String label, Set<String> values) {
         Map<String, Map<String, String>> timePeriodsForValues = new HashMap<>();
         values.parallelStream()
                 .forEach(value -> {
@@ -61,6 +55,6 @@ public class LabourFilterInfoBuilder extends FilterInfoBuilder {
                     FilteredTabularData data = new FilteredTabularData(getTable(), rows);
                     timePeriodsForValues.put(value, timePeriods.getTimePeriodsFor(data, false));
                 });
-        return new LabourValuesFilterInfo(column, values, timePeriodsForValues);
+        return new LabourValuesFilterInfo(column, label, values, timePeriodsForValues);
     }
 }

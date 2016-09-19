@@ -426,6 +426,7 @@ function Treemap(d3) {
                 size: cur.size,
                 color: cur.color,
                 sizeLast: d.size,
+                colorLast: d.color,
                 scale: d3.scale.linear()
                     .domain([0, cur.size])
                     .range([0, popoverWidth])
@@ -513,7 +514,7 @@ function Treemap(d3) {
                 return 60 + (i * 35);
             })
             .attr("fill", function (d) {
-                var color = determineColor(d);
+                var color = determineColor(d, 'colorLast');
                 return (color) ? color : '#5580B7';
             });
 
@@ -608,13 +609,14 @@ function Treemap(d3) {
             name += (" " + d.suffix);
         return name;
     };
-
-    var determineColor = function (d) {
-        if (d.color) {
-            if (d.color.indexOf(';') >= 0) {
-                return multicolor(d.color.split(';'));
+    
+    var determineColor = function (d, column) {
+        column = column || 'color';
+        if (d[column]) {
+            if (d[column].indexOf(';') >= 0) {
+                return multicolor(d[column].split(';'));
             }
-            return d.color;
+            return d[column];
         }
         return null;
     };

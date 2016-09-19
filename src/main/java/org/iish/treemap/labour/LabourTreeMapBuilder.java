@@ -154,8 +154,7 @@ public class LabourTreeMapBuilder {
 
         for (Map.Entry<String, String[]> entry : request.queryMap().toMap().entrySet()) {
             if (entry.getKey().startsWith("filter:")) {
-                Set<String> values = Arrays.asList(entry.getValue())
-                        .stream()
+                Set<String> values = Arrays.stream(entry.getValue())
                         .filter(v -> !v.trim().isEmpty())
                         .collect(Collectors.toSet());
 
@@ -223,8 +222,11 @@ public class LabourTreeMapBuilder {
         if (filter.contains("bmyear"))
             filter.add("year");
 
-        FilterInfoBuilder filterInfoBuilder = new LabourFilterInfoBuilder(
-                data, config.labour.treemap.empty, Collections.singleton("bmyear"), timePeriods);
+        LabourFilterInfoBuilder filterInfoBuilder = new LabourFilterInfoBuilder(data, config.labour.treemap.empty);
+        filterInfoBuilder.setColumnsAllValues(Collections.singleton("bmyear"));
+        filterInfoBuilder.setLabels(config.labour.treemap.labels);
+        filterInfoBuilder.setTimePeriods(timePeriods);
+
         return filterInfoBuilder.getFilterInfo(Utils.filterOutEmpty(filter));
     }
 }
