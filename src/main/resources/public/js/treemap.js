@@ -1,11 +1,13 @@
 'use strict';
 
-function Treemap(d3) {
+function Treemap(d3, maxNoHierarchies) {
     var legendHeight = 25,
         oneUpHeight = 25,
-        informationHeight = 250,
+        informationTopMargin = 50,
+        informationRowHeight = 45,
+        informationHeight = informationTopMargin + ((maxNoHierarchies + 1) * informationRowHeight),
         width = 1120,
-        height = 850,
+        height = 650 + informationHeight,
         treemapHeight = height - legendHeight - oneUpHeight - informationHeight,
         format = d3.format(','),
         transitioning, depth, node;
@@ -75,7 +77,13 @@ function Treemap(d3) {
         oneUp.append("text")
             .attr("x", 6)
             .attr("y", 6)
-            .attr("dy", ".75em");
+            .attr("dy", ".75em")
+            .attr("clip-path", clippath({
+                x: 6,
+                y: 6,
+                width: width - 180,
+                height: oneUpHeight
+            }));
 
         oneUp.append("text")
             .attr("x", width - 6)
@@ -99,9 +107,6 @@ function Treemap(d3) {
                 "fill": "#fff"
             });
     };
-
-    setUpTreemapLayout();
-    setUpSVG();
 
     // -------------------------------------------------------------------------------------------------------- //
 
@@ -444,7 +449,10 @@ function Treemap(d3) {
             .attr("x", 15)
             .attr("y", 25)
             .text("Frequency and percentage")
-            .style("font-weight", "bold");
+            .style({
+                "font-weight": "bold",
+                "font-size": "12px"
+            });
 
         information.selectAll()
             .data(branchesLeft)
@@ -453,7 +461,7 @@ function Treemap(d3) {
             .attr("height", 5)
             .attr("x", 10)
             .attr("y", function (d, i) {
-                return 60 + (i * 35);
+                return informationTopMargin + 20 + (i * informationRowHeight);
             })
             .attr("fill", "lightgrey");
 
@@ -466,7 +474,7 @@ function Treemap(d3) {
             .attr("height", 5)
             .attr("x", 10)
             .attr("y", function (d, i) {
-                return 60 + (i * 35);
+                return informationTopMargin + 20 + (i * informationRowHeight);
             })
             .attr("fill", function (d) {
                 var color = determineColor(d);
@@ -478,18 +486,46 @@ function Treemap(d3) {
             .enter().append("text")
             .attr("x", 15)
             .attr("y", function (d, i) {
-                return 55 + (i * 35);
+                return informationTopMargin + (i * informationRowHeight);
+            })
+            .style("font-size", "12px")
+            .attr("clip-path", function (d, i) {
+                return clippath({
+                    x: 15,
+                    y: (informationTopMargin - 10) + (i * informationRowHeight),
+                    width: popoverWidth - 15,
+                    height: 15
+                });
+            })
+            .text(function (d) {
+                return determineName(d);
+            });
+
+        information.selectAll()
+            .data(branchesLeft)
+            .enter().append("text")
+            .attr("x", popoverWidth - 5)
+            .attr("y", function (d, i) {
+                return informationTopMargin + 15 + (i * informationRowHeight);
+            })
+            .attr("text-anchor", "end")
+            .style({
+                "font-size": "12px",
+                "font-style": "italic"
             })
             .text(function (d) {
                 var percentage = Math.round(d.size * 10000 / total) / 100;
-                return determineName(d) + " (" + format(d.size) + " / " + percentage + "%)";
+                return "(" + format(d.size) + " / " + percentage + "%)";
             });
 
         information.append('text')
             .attr("x", popoverWidth + 30)
             .attr("y", 25)
             .text("Relative percentage")
-            .style("font-weight", "bold");
+            .style({
+                "font-weight": "bold",
+                "font-size": "12px"
+            });
 
         information.selectAll()
             .data(branchesRight)
@@ -498,7 +534,7 @@ function Treemap(d3) {
             .attr("height", 5)
             .attr("x", popoverWidth + 30)
             .attr("y", function (d, i) {
-                return 60 + (i * 35);
+                return informationTopMargin + 20 + (i * informationRowHeight);
             })
             .attr("fill", "lightgrey");
 
@@ -511,7 +547,7 @@ function Treemap(d3) {
             .attr("height", 5)
             .attr("x", popoverWidth + 30)
             .attr("y", function (d, i) {
-                return 60 + (i * 35);
+                return informationTopMargin + 20 + (i * informationRowHeight);
             })
             .attr("fill", function (d) {
                 var color = determineColor(d, 'colorLast');
@@ -523,11 +559,36 @@ function Treemap(d3) {
             .enter().append("text")
             .attr("x", popoverWidth + 30)
             .attr("y", function (d, i) {
-                return 55 + (i * 35);
+                return informationTopMargin + (i * informationRowHeight);
+            })
+            .style("font-size", "12px")
+            .attr("clip-path", function (d, i) {
+                return clippath({
+                    x: popoverWidth + 30,
+                    y: (informationTopMargin - 10) + (i * informationRowHeight),
+                    width: popoverWidth - 15,
+                    height: 15
+                });
+            })
+            .text(function (d2) {
+                return determineName(d) + " / " + determineName(d2);
+            });
+
+        information.selectAll()
+            .data(branchesRight)
+            .enter().append("text")
+            .attr("x", (popoverWidth * 2) + 15)
+            .attr("y", function (d, i) {
+                return informationTopMargin + 15 + (i * informationRowHeight);
+            })
+            .attr("text-anchor", "end")
+            .style({
+                "font-size": "12px",
+                "font-style": "italic"
             })
             .text(function (d2) {
                 var percentage = Math.round(d2.sizeLast * 10000 / d2.size) / 100;
-                return determineName(d) + " / " + determineName(d2) + " (" + percentage + "%)";
+                return percentage + "%";
             });
     };
 
@@ -560,6 +621,14 @@ function Treemap(d3) {
             })
             .attr("y", function (d) {
                 return y(d.y) + 10;
+            })
+            .attr("clip-path", function (d) {
+                return clippath({
+                    x: x(d.x),
+                    y: y(d.y),
+                    width: x(d.x + d.dx) - x(d.x),
+                    height: y(d.y + d.dy) - y(d.y)
+                });
             });
     };
 
@@ -647,4 +716,27 @@ function Treemap(d3) {
         }
         return 'url(#' + name + ')';
     };
+
+    var clippath = function (rect) {
+        var name = 'r' +
+            rect.x.toString().replace(/\./g, '_') + '-' +
+            rect.y.toString().replace(/\./g, '_') + '-' +
+            rect.width.toString().replace(/\./g, '_') + '-' +
+            rect.height.toString().replace(/\./g, '_');
+        if (defs.select('#' + name).size() === 0) {
+            defs.append("clipPath")
+                .attr("id", name)
+                .append("rect")
+                    .attr("x", rect.x)
+                    .attr("y", rect.y)
+                    .attr("width", rect.width)
+                    .attr("height", rect.height);
+        }
+        return 'url(#' + name + ')';
+    };
+
+    // -------------------------------------------------------------------------------------------------------- //
+
+    setUpTreemapLayout();
+    setUpSVG();
 }

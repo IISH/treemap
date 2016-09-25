@@ -3,7 +3,7 @@
 (function ($, d3) {
     var filters = $('#filters');
     var valuesContainer = $('#values-container');
-    var treemap = new Treemap(d3);
+    var treemap = new Treemap(d3, 5); // TODO: Determine based on size of param 'hierarchy'
     var render = false;
     var updateTimeout = null;
 
