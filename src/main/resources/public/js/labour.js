@@ -94,27 +94,7 @@
 
                 if (filter.values) {
                     var values = filter.values.sort();
-
-                    /*if (filter.years) {
-                        html += '<div class="col-sm-10">';
-                        values.forEach(function (value) {
-                            html += '<label class="checkbox-inline">';
-                            html += '<input type="checkbox" name="filter:' + filter.column + '" value="' + value + '"/>';
-                            html += value;
-                            html += '<select class="form-control subfilter" name="' + filter.column + ':' + value + '">';
-                            filter.years[value].forEach(function (year) {
-                                html += '<option value="' + year + '">';
-                                html += year;
-                                html += '</option>';
-                            });
-                            html += '</select>';
-                            html += '</label>';
-                        });
-                        html += '<button type="button" class="btn btn-default btn-xs unselect-all">';
-                        html += 'Reset all</button>';
-                        html += '</div>';
-                    }
-                    else*/ if (values.length < 10) {
+                    if (values.length < 10) {
                         html += '<div class="col-sm-10">';
                         values.forEach(function (value) {
                             html += '<label class="checkbox-inline">';

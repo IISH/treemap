@@ -49,20 +49,6 @@ public class LabourFilterInfoBuilder extends FilterInfoBuilder {
     protected ValuesFilterInfo createValuesFilter(String column, String label, Set<String> values) {
         LabourValuesFilterInfo filterInfo = new LabourValuesFilterInfo(column, label, values);
 
-        /*if (column.equals("bmyear")) {
-            Map<String, List<String>> yearsForBmYears = new HashMap<>();
-            values.parallelStream().forEach(year -> {
-                List<String> rows = getTable().getRows().stream()
-                        .filter(row -> year.equals(getTable().getValue(column, row)))
-                        .map(row -> getTable().getValue("year", row))
-                        .distinct()
-                        .sorted()
-                        .collect(Collectors.toList());
-                yearsForBmYears.put(year, rows);
-            });
-            filterInfo.setYears(yearsForBmYears);
-        }*/
-
         if (!column.equals("bmyear")) {
             Map<String, Map<String, String>> timePeriodsForValues = new HashMap<>();
             values.parallelStream().forEach(value -> {

@@ -171,20 +171,6 @@ public class LabourTreeMapBuilder {
                     Set<String> values = Arrays.stream(entry.getValue())
                             .filter(v -> !v.trim().isEmpty())
                             .collect(Collectors.toSet());
-
-                    /*if (column.equals("bmyear")) {
-                        column = "year";
-                        values = values.stream()
-                                .map(year -> entrySet.stream()
-                                        .filter(subEntry -> subEntry.getKey().equals("bmyear:" + year))
-                                        .map(Map.Entry::getValue)
-                                        .map(value -> (value.length > 0) ? value[0] : null)
-                                        .findFirst()
-                                        .orElse(null))
-                                .filter(year -> year != null)
-                                .collect(Collectors.toSet());
-                    }*/
-
                     return new AbstractMap.SimpleEntry<>(column, values);
                 })
                 .filter(entry -> !entry.getValue().isEmpty())
