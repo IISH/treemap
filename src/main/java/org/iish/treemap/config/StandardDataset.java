@@ -1,7 +1,7 @@
 package org.iish.treemap.config;
 
 import com.google.inject.Singleton;
-import org.iish.treemap.model.TabularData;
+import org.iish.treemap.model.tabular.TabularData;
 
 /**
  * Temporary holder for the default large dataset, not found in Dataverse yet.

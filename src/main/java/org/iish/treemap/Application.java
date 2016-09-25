@@ -12,7 +12,7 @@ import org.iish.treemap.labour.LabourRelations;
 import org.iish.treemap.labour.LabourRelationsXlsxReader;
 import org.iish.treemap.labour.LabourTreeMapBuilder;
 import org.iish.treemap.labour.TimePeriods;
-import org.iish.treemap.model.TabularData;
+import org.iish.treemap.model.tabular.TabularData;
 import org.iish.treemap.util.XlsxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,8 @@ public class Application implements SparkApplication {
      * Sets up the various routes.
      */
     private void setUpPaths() {
-        staticFileLocation("/public");
+        staticFiles.location("/public");
+        staticFiles.expireTime(60*60*24); // 1 day in seconds
 
         get("/labour/files", (req, res) -> labourTreeMapBuilder.getFiles(req), GSON::toJson);
 

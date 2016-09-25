@@ -5,6 +5,7 @@
     var valuesContainer = $('#values-container');
     var treemap = new Treemap(d3);
     var render = false;
+    var updateTimeout = null;
 
     $('.download.svg').click(function () {
         treemap.downloadSVG('treemap.svg');
@@ -32,7 +33,7 @@
         });
     });
 
-    filters.on('change', 'input[type=checkbox], select', reload);
+    filters.on('change', 'input[type=checkbox], input[type=radio], select', reload);
 
     filters.on('slideStop', 'input.slider', reload);
 
@@ -56,12 +57,29 @@
         var form = filters.html('<form class="form-horizontal"></form>').find('form');
 
         var html = '<div class="form-group form-group-sm">';
-        html += '<label class="col-sm-2 control-label""><strong>Show multiples ';
+        html += '<label class="col-sm-2 control-label""><strong>Either / Or ';
         html += '<i class="glyphicon glyphicon-info-sign" title="' + getTitle('multiples') + '" ';
         html += 'data-toggle="tooltip" data-placement="bottom"></i></strong></label>';
-        html += '<div class="col-sm-8"><label class="checkbox-inline">';
-        html += '<input type="checkbox" name="multiples" value="show"/> &nbsp;';
+        html += '<div class="col-sm-3 buttons-inline">';
+        html += '<div class="btn-group btn-group-xs btn-toggle" data-toggle="buttons">';
+        html += '<label class="btn btn-default">';
+        html += '<input type="radio" name="multiples" value="show"> Show individually';
+        html += '</label>';
+        html += '<label class="btn btn-default active">';
+        html += '<input type="radio" name="multiples" value="combine" checked=""> Combine';
         html += '</label></div></div>';
+        html += '<label class="col-sm-2 control-label"><strong>Uncollected data ';
+        html += '<i class="glyphicon glyphicon-info-sign" title="' + getTitle('totalPopulation') + '" ';
+        html += 'data-toggle="tooltip" data-placement="bottom"></i></strong></label>';
+        html += '<div class="col-sm-2 buttons-inline">';
+        html += '<div class="btn-group btn-group-xs btn-toggle" data-toggle="buttons">';
+        html += '<label class="btn btn-default">';
+        html += '<input type="radio" name="totalPopulation" value="show"> Include';
+        html += '</label>';
+        html += '<label class="btn btn-default active">';
+        html += '<input type="radio" name="totalPopulation" value="combine" checked=""> Exclude';
+        html += '</label></div></div>';
+        html += '</div>';
         form.append(html);
 
         filterInfo.forEach(function (filter) {
@@ -77,7 +95,26 @@
                 if (filter.values) {
                     var values = filter.values.sort();
 
-                    if (values.length < 10) {
+                    /*if (filter.years) {
+                        html += '<div class="col-sm-10">';
+                        values.forEach(function (value) {
+                            html += '<label class="checkbox-inline">';
+                            html += '<input type="checkbox" name="filter:' + filter.column + '" value="' + value + '"/>';
+                            html += value;
+                            html += '<select class="form-control subfilter" name="' + filter.column + ':' + value + '">';
+                            filter.years[value].forEach(function (year) {
+                                html += '<option value="' + year + '">';
+                                html += year;
+                                html += '</option>';
+                            });
+                            html += '</select>';
+                            html += '</label>';
+                        });
+                        html += '<button type="button" class="btn btn-default btn-xs unselect-all">';
+                        html += 'Reset all</button>';
+                        html += '</div>';
+                    }
+                    else*/ if (values.length < 10) {
                         html += '<div class="col-sm-10">';
                         values.forEach(function (value) {
                             html += '<label class="checkbox-inline">';
@@ -119,7 +156,7 @@
             }
         });
 
-        form.find('select').select2({theme: 'bootstrap', allowClear: true});
+        form.find('select[multiple]').select2({theme: 'bootstrap', allowClear: true});
 
         var slider = form.find('input.slider');
         slider.slider({'tooltip': 'hide'});
@@ -135,14 +172,19 @@
             row.find('.max').val(max);
             row.find('.max-label').text(max);
         });
+
+        form.find('[data-toggle="tooltip"]').tooltip();
     }
 
     function reload() {
-        if (render) {
-            treemap.loadFromUrl(getTreemapUrlWithFilters(), function (treemapInfo) {
-                updateValues(treemapInfo.filterInfo);
-            });
-        }
+        clearTimeout(updateTimeout);
+        updateTimeout = setTimeout(function () {
+            if (render) {
+                treemap.loadFromUrl(getTreemapUrlWithFilters(), function (treemapInfo) {
+                    updateValues(treemapInfo.filterInfo);
+                });
+            }
+        }, 0);
     }
 
     function getTreemapUrlWithFilters() {
@@ -156,38 +198,39 @@
     function updateValues(filterInfo) {
         var html = '';
         filterInfo.forEach(function (info) {
-            var label = (info.label) ? info.label : info.column;
+            if ((info.values && info.timePeriods) || (info.min && info.max)) {
+                var label = (info.label) ? info.label : info.column;
 
-            html += '<div>';
-            html += '<div class="column">All ' + label.toLowerCase() + ':</div>';
-            if (info.values) {
-                html += '<ul class="values list-unstyled">';
-                info.values.sort().forEach(function (value) {
-                    html += '<li>';
-                    html += value;
+                html += '<div>';
+                html += '<div class="column">All ' + label.toLowerCase() + ':</div>';
+                if (info.values) {
+                    html += '<ul class="values list-unstyled">';
+                    info.values.sort().forEach(function (value) {
+                        html += '<li>';
+                        html += value;
 
-                    var timePeriods = info.timePeriods[value];
-                    if (timePeriods) {
-                        html += '<ul class="years list-unstyled">';
-                        for (var key in timePeriods) {
-                            if (timePeriods.hasOwnProperty(key)) {
-                                html += '<li class="year">';
-                                html += key + ': ' + timePeriods[key];
-                                html += '</li>';
+                        var timePeriods = info.timePeriods[value];
+                        if (timePeriods) {
+                            html += '<ul class="years list-unstyled">';
+                            for (var key in timePeriods) {
+                                if (timePeriods.hasOwnProperty(key)) {
+                                    html += '<li class="year">';
+                                    html += key + ': ' + timePeriods[key];
+                                    html += '</li>';
+                                }
                             }
+                            html += '</ul>';
                         }
-                        html += '</ul>';
-                    }
 
-                    html += '</li>';
-                });
-                html += '</ul>';
+                        html += '</li>';
+                    });
+                    html += '</ul>';
+                }
+                else {
+                    html += '<div class="values">Ranges from ' + info.min + ' to ' + info.max + '</div>';
+                }
+                html += '</div>';
             }
-            else {
-                html += '<div class="values">Ranges from ' + info.min + ' to ' + info.max + '</div>';
-
-            }
-            html += '</div>';
         });
         valuesContainer.html(html);
     }
@@ -195,8 +238,10 @@
     function getTitle(column, filter) {
         switch (column) {
             case 'multiples':
-                return 'Show the various combinations as seperate blocks in the treemap, ' +
-                    'or just show a single block containing all multiples.';
+                return 'Show the various combinations as individual blocks in the treemap, ' +
+                    'or just show a single block containing all combinations.';
+            case 'totalPopulation':
+                return 'Include a block with uncollected data in the treemap or just show the collected data.';
             default:
                 if (filter.values) {
                     if (filter.values.length < 10)

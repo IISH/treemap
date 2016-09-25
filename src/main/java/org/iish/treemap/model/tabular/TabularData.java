@@ -1,6 +1,7 @@
-package org.iish.treemap.model;
+package org.iish.treemap.model.tabular;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,7 +58,8 @@ public class TabularData implements Serializable {
      * @return The value.
      */
     public String getValue(String header, int row) {
-        return data.get(row)[headers.get(header)];
+        Integer index = headers.getOrDefault(header, null);
+        return ((index != null) && (index < data.get(row).length)) ? data.get(row)[index] : null;
     }
 
     /**
@@ -68,4 +70,11 @@ public class TabularData implements Serializable {
     public int getSize() {
         return data.size();
     }
+
+    /**
+     * Returns the number of columns of the dataset.
+     *
+     * @return The number of columns.
+     */
+    public int getNumCols() { return Collections.max(headers.values());}
 }

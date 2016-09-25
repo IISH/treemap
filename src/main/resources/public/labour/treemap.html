@@ -28,18 +28,33 @@
     </div>
   </div>
 
-  <p id="info" class="well">
+  <div id="info" class="well well-sm">
     <button type="button" class="close" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
 
-    Filter the dataset using the filter options below. After you made a selection,
-    the treemap will automatically update. The treemap shows only one hierarchical level at the time,
-    with an indication of the next hierarchical level. Click on a node in the treemap
-    to zoom into that nodes next hierarchical level. You can zoom out by clicking on the breadcrumb bar,
-    which shows the zoomed in nodes. Hovering over a node shows the total size of that node
-    compared to the overall total size.
-  </p>
+    <p>
+      Filter the dataset using the filter options below. After you made a selection,
+      the treemap will automatically update. The treemap shows only one hierarchical level at the time,
+      with an indication of the next hierarchical level. Click on a node in the treemap
+      to zoom into that nodes next hierarchical level. You can zoom out by clicking on the breadcrumb bar,
+      which shows the zoomed in nodes. Hovering over a node shows the total size of that node
+      compared to the overall total size.
+    </p>
+
+    <p>
+      The estimates for the total populations of the continents for each of the cross section years,
+      were derived from the dataset "Statistics on World Population, GDP and Per Capita GDP, 1-2008 AD"
+      by Angus Maddison
+      (<a href="http://www.ggdc.net/maddison/Historical_Statistics/horizontal-file_02-2010.xls">http://www.ggdc.net/maddison/Historical_Statistics/horizontal-file_02-2010.xls</a>).
+    </p>
+
+    <p>
+      The estimates for 1650 and 1800 were calculated by using the linear growth between 1600 & 1700
+      and 1700 & 1820 respectively. The ordering of the countries in the original dataset was readjusted
+      to align them with the continents used in this treemap application.
+    </p>
+  </div>
 
   <div id="filters"></div>
 
@@ -60,6 +75,7 @@
 </div>
 <script src="../js/d3.min.js" type="text/javascript"></script>
 <script src="../js/jquery-3.1.0.min.js" type="text/javascript"></script>
+<script src="../js/bootstrap.min.js" type="text/javascript"></script>
 <script src="../js/select2.min.js" type="text/javascript"></script>
 <script src="../js/bootstrap-slider.min.js" type="text/javascript"></script>
 <script src="../js/treemap.js" type="text/javascript"></script>

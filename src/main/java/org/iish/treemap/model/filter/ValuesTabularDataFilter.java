@@ -1,4 +1,7 @@
-package org.iish.treemap.model;
+package org.iish.treemap.model.filter;
+
+import org.iish.treemap.model.tabular.FilteredTabularData;
+import org.iish.treemap.model.tabular.TabularData;
 
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -1,4 +1,6 @@
-package org.iish.treemap.model;
+package org.iish.treemap.model.filter;
+
+import org.iish.treemap.model.tabular.TabularData;
 
 /**
  * A filter for datasets.

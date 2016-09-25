@@ -1,4 +1,4 @@
-package org.iish.treemap.model;
+package org.iish.treemap.model.treemap;
 
 import java.util.List;
 

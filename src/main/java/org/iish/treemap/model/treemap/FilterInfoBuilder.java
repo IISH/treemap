@@ -1,5 +1,6 @@
-package org.iish.treemap.model;
+package org.iish.treemap.model.treemap;
 
+import org.iish.treemap.model.tabular.TabularData;
 import org.iish.treemap.util.Utils;
 
 import java.math.BigDecimal;
@@ -11,7 +12,6 @@ import java.util.stream.Collectors;
  */
 public class FilterInfoBuilder {
     private TabularData table;
-    private String empty;
     private Set<String> columnsAllValues;
     private Map<String, String> labels;
 
@@ -19,11 +19,9 @@ public class FilterInfoBuilder {
      * Creates a builder that creates filter information.
      *
      * @param table The dataset.
-     * @param empty The value for empty values.
      */
-    public FilterInfoBuilder(TabularData table, String empty) {
+    public FilterInfoBuilder(TabularData table) {
         this.table = table;
-        this.empty = empty;
     }
 
     /**
@@ -93,7 +91,7 @@ public class FilterInfoBuilder {
         return table.getRows().stream()
                 .map(row -> {
                     String value = table.getValue(column, row);
-                    return (value != null) ? value : empty;
+                    return (value != null) ? value : "-";
                 })
                 .distinct()
                 .collect(Collectors.toSet());

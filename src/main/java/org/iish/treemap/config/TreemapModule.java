@@ -5,7 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
-import org.iish.treemap.model.TabularData;
+import org.iish.treemap.model.tabular.TabularData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;

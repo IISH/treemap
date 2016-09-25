@@ -6,8 +6,10 @@ import org.iish.treemap.config.StandardDataset;
 import org.iish.treemap.dataset.DataverseApiClient;
 import org.iish.treemap.dataset.DataverseException;
 import org.iish.treemap.dataset.DataverseFile;
-import org.iish.treemap.model.*;
-import org.iish.treemap.model.Treemap;
+import org.iish.treemap.model.treemap.*;
+import org.iish.treemap.model.filter.*;
+import org.iish.treemap.model.tabular.MultiTabularData;
+import org.iish.treemap.model.tabular.TabularData;
 import org.iish.treemap.util.Utils;
 import org.iish.treemap.util.XlsxException;
 import spark.Request;
@@ -32,6 +34,7 @@ public class LabourTreeMapBuilder {
     private DataverseApiClient dataverseApiClient;
     private LabourRelations labourRelations;
     private TimePeriods timePeriods;
+    private TotalPopulation totalPopulation;
     private Cache<String, TabularData> cache;
 
     /**
@@ -42,17 +45,19 @@ public class LabourTreeMapBuilder {
      * @param dataverseApiClient The Dataverse API client to use.
      * @param labourRelations    The labour relations to use.
      * @param timePeriods        The time periods to use.
+     * @param totalPopulation    The total population to use.
      * @param cache              The cache holding datasets.
      */
     @Inject
     public LabourTreeMapBuilder(Config config, StandardDataset standardDataset, DataverseApiClient dataverseApiClient,
                                 LabourRelations labourRelations, TimePeriods timePeriods,
-                                Cache<String, TabularData> cache) {
+                                TotalPopulation totalPopulation, Cache<String, TabularData> cache) {
         this.config = config;
         this.standardDataset = standardDataset;
         this.dataverseApiClient = dataverseApiClient;
         this.labourRelations = labourRelations;
         this.timePeriods = timePeriods;
+        this.totalPopulation = totalPopulation;
         this.cache = cache;
     }
 
@@ -88,10 +93,17 @@ public class LabourTreeMapBuilder {
      */
     public TreemapInfo getTreemap(Request request) throws LabourTreemapException {
         TabularData data = getTabularData(request);
-        TabularData filterData = filterData(request, data);
+        Set<TabularDataFilter> filters = getRequestFilters(request);
 
-        Treemap treemap = buildTreemap(request, filterData);
-        List<FilterInfo> filterInfo = buildFilterInfo(request, filterData);
+        DefaultLabourFilter defaultLabourFilter = new DefaultLabourFilter(
+                config.labour.xlsx.columns.year, config.labour.xlsx.columns.country, timePeriods);
+        TabularData defaultFilteredData = defaultLabourFilter.filter(data);
+
+        TabularData extendedData = extendData(request, defaultFilteredData);
+        TabularData filteredData = filterData(filters, extendedData);
+
+        Treemap treemap = buildTreemap(request, filteredData);
+        List<FilterInfo> filterInfo = buildFilterInfo(request, filteredData);
 
         return new TreemapInfo(treemap, filterInfo, labourRelations.getLegend());
     }
@@ -143,45 +155,98 @@ public class LabourTreeMapBuilder {
     }
 
     /**
-     * If the request specifies filters, then apply those filters on the dataset.
+     * If the request specifies filters, then return those filters.
      *
      * @param request The filter request.
+     * @return The filters.
+     */
+    private Set<TabularDataFilter> getRequestFilters(Request request) {
+        Set<TabularDataFilter> filters = new HashSet<>();
+        Set<Map.Entry<String, String[]>> entrySet = request.queryMap().toMap().entrySet();
+
+        entrySet.stream()
+                .filter(entry -> entry.getKey().startsWith("filter:"))
+                .map(entry -> {
+                    String column = entry.getKey().substring(7);
+                    Set<String> values = Arrays.stream(entry.getValue())
+                            .filter(v -> !v.trim().isEmpty())
+                            .collect(Collectors.toSet());
+
+                    /*if (column.equals("bmyear")) {
+                        column = "year";
+                        values = values.stream()
+                                .map(year -> entrySet.stream()
+                                        .filter(subEntry -> subEntry.getKey().equals("bmyear:" + year))
+                                        .map(Map.Entry::getValue)
+                                        .map(value -> (value.length > 0) ? value[0] : null)
+                                        .findFirst()
+                                        .orElse(null))
+                                .filter(year -> year != null)
+                                .collect(Collectors.toSet());
+                    }*/
+
+                    return new AbstractMap.SimpleEntry<>(column, values);
+                })
+                .filter(entry -> !entry.getValue().isEmpty())
+                .map(entry -> new ValuesTabularDataFilter(entry.getKey(), entry.getValue(), true))
+                .forEach(filters::add);
+
+        entrySet.stream()
+                .filter(entry -> entry.getKey().startsWith("min:"))
+                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey().substring(4), entry.getValue()[0]))
+                .map(entry -> new MinimalTabularDataFilter(entry.getKey(), Utils.getBigDecimal(entry.getValue())))
+                .forEach(filters::add);
+
+        entrySet.stream()
+                .filter(entry -> entry.getKey().startsWith("max:"))
+                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey().substring(4), entry.getValue()[0]))
+                .map(entry -> new MaximumTabularDataFilter(entry.getKey(), Utils.getBigDecimal(entry.getValue())))
+                .forEach(filters::add);
+
+        return filters;
+    }
+
+    /**
+     * If the request requires total population information, add the data to the dataset.
+     * Can only extend dataset if no filters (except on bmyear or continent) are applied.
+     *
+     * @param request     The request.
+     * @param tabularData The data set.
+     * @return The extended dataset.
+     */
+    private TabularData extendData(Request request, TabularData tabularData) {
+        String showTotalPopulation = request.queryParams("totalPopulation");
+
+        if ((showTotalPopulation != null) && showTotalPopulation.equalsIgnoreCase("show")) {
+            long noFiltersApplied = request.queryMap().toMap().entrySet().stream()
+                    .filter(entry -> {
+                        String key = entry.getKey();
+                        return key.startsWith("filter:") || key.startsWith("min:") || key.startsWith("max:");
+                    })
+                    .filter(entry -> {
+                        String key = entry.getKey();
+                        return !key.equals("filter:" + config.labour.xlsx.virtualColumns.bmyear) &&
+                                !key.equals("filter:" + config.labour.xlsx.virtualColumns.continent);
+                    })
+                    .count();
+            if (noFiltersApplied == 0) {
+                return totalPopulation.enrichDataset(tabularData);
+            }
+        }
+        return tabularData;
+    }
+
+    /**
+     * Apply the given filters on the dataset.
+     *
+     * @param filters The filters.
      * @param data    The data set.
      * @return The filtered dataset.
      */
-    private TabularData filterData(Request request, TabularData data) {
-        Set<TabularDataFilter> filters = new HashSet<>();
-
-        for (Map.Entry<String, String[]> entry : request.queryMap().toMap().entrySet()) {
-            if (entry.getKey().startsWith("filter:")) {
-                Set<String> values = Arrays.stream(entry.getValue())
-                        .filter(v -> !v.trim().isEmpty())
-                        .collect(Collectors.toSet());
-
-                if (!values.isEmpty()) {
-                    filters.add(new ValuesTabularDataFilter(
-                            entry.getKey().substring(7), values, values.contains(config.labour.treemap.empty)
-                    ));
-                }
-            }
-
-            if (entry.getKey().startsWith("min:")) {
-                filters.add(new MinimalTabularDataFilter(
-                        entry.getKey().substring(4), Utils.getBigDecimal(entry.getValue()[0])
-                ));
-            }
-
-            if (entry.getKey().startsWith("max:")) {
-                filters.add(new MaximumTabularDataFilter(
-                        entry.getKey().substring(4), Utils.getBigDecimal(entry.getValue()[0])
-                ));
-            }
-        }
-
+    private TabularData filterData(Set<TabularDataFilter> filters, TabularData data) {
         for (TabularDataFilter filter : filters) {
             data = filter.filter(data);
         }
-
         return data;
     }
 
@@ -195,16 +260,17 @@ public class LabourTreeMapBuilder {
     private Treemap buildTreemap(Request request, TabularData data) {
         List<String> hierarchy = Utils.filterOutEmpty(Arrays.asList(request.queryParamsValues("hierarchy")));
 
-        TreemapBuilder treemapBuilder =
-                new TreemapBuilder(data, hierarchy, request.queryParams("size"), config.labour.treemap.empty);
+        TreemapBuilder treemapBuilder = new TreemapBuilder(data, hierarchy, request.queryParams("size"));
         treemapBuilder.setRoundSize(true);
-        treemapBuilder.setColorColumn("color");
+        treemapBuilder.setColorColumn(config.labour.xlsx.virtualColumns.color);
+        treemapBuilder.setEmptyMap(config.labour.treemap.empty);
         treemapBuilder.setSuffixMap(config.labour.treemap.suffix);
 
-        if (request.queryParams("multiples") != null)
+        String showMultiples = request.queryParams("multiples");
+        if ((showMultiples != null) && showMultiples.equalsIgnoreCase("show"))
             treemapBuilder.setMultiples(config.labour.treemap.multiples);
 
-        return treemapBuilder.getTreeMap("Total population");
+        return treemapBuilder.getTreeMap(config.labour.treemap.rootLabel);
     }
 
     /**
@@ -219,11 +285,8 @@ public class LabourTreeMapBuilder {
         List<String> filter = new ArrayList<>((filterInfoArr != null)
                 ? Arrays.asList(filterInfoArr) : Collections.emptyList());
 
-        if (filter.contains("bmyear"))
-            filter.add("year");
-
-        LabourFilterInfoBuilder filterInfoBuilder = new LabourFilterInfoBuilder(data, config.labour.treemap.empty);
-        filterInfoBuilder.setColumnsAllValues(Collections.singleton("bmyear"));
+        LabourFilterInfoBuilder filterInfoBuilder = new LabourFilterInfoBuilder(data);
+        filterInfoBuilder.setColumnsAllValues(Collections.singleton(config.labour.xlsx.virtualColumns.bmyear));
         filterInfoBuilder.setLabels(config.labour.treemap.labels);
         filterInfoBuilder.setTimePeriods(timePeriods);
 

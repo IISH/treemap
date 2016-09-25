@@ -1,6 +1,7 @@
-package org.iish.treemap.model;
+package org.iish.treemap.model.tabular;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,8 +12,19 @@ import java.util.stream.Collectors;
 public class MultiTabularData extends TabularData implements Serializable {
     private List<TabularData> datasets;
 
+    /**
+     * Creates a combined tabular dataset.
+     *
+     * @param datasets The datasets to combine.
+     */
     public MultiTabularData(List<TabularData> datasets) {
-        this.datasets = datasets;
+        this.datasets = datasets.stream()
+                .flatMap(dataset -> {
+                    if (dataset instanceof MultiTabularData)
+                        return ((MultiTabularData) dataset).getDatasets().stream();
+                    return Collections.singleton(dataset).stream();
+                })
+                .collect(Collectors.toList());
     }
 
     /**

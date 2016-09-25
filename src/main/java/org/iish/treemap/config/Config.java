@@ -13,6 +13,7 @@ public class Config {
     public Data labour;
     public LabourRelations labourRelations;
     public List<TimePeriod> timePeriods;
+    public WorldPopulation worldPopulation;
     public Map<String, String> countriesToContinent;
 
     public static class Dataverse {
@@ -34,19 +35,46 @@ public class Config {
     public static class Xlsx {
         public String empty;
         public XlsColumns columns;
+        public VirtualColumns virtualColumns;
     }
 
     public static class XlsColumns {
         public String year;
+        public String total;
         public String country;
         public String labourRelationLevel1;
         public String labourRelationLevel2;
         public String labourRelationLevel3;
     }
 
+    public static class VirtualColumns {
+        public String labRel11;
+        public String labRel12;
+        public String labRel13;
+        public String labRel21;
+        public String labRel22;
+        public String labRel23;
+        public String labRel31;
+        public String labRel32;
+        public String labRel33;
+        public String labRelMultiple11;
+        public String labRelMultiple12;
+        public String labRelMultiple13;
+        public String labRelMultiple21;
+        public String labRelMultiple22;
+        public String labRelMultiple23;
+        public String labRelMultiple31;
+        public String labRelMultiple32;
+        public String labRelMultiple33;
+        public String color;
+        public String bmyear;
+        public String continent;
+    }
+
     public static class Treemap {
-        public String empty;
+        public String rootLabel;
         public Map<String, String> labels;
+        public Map<String, String> empty;
         public Map<String, String> suffix;
         public Map<String, String> multiples;
     }
@@ -71,5 +99,11 @@ public class Config {
         public int timePeriod;
         public int minYear;
         public int maxYear;
+    }
+
+    public static class WorldPopulation {
+        public String label;
+        public String color;
+        public Map<Integer, Map<String, Number>> totals;
     }
 }

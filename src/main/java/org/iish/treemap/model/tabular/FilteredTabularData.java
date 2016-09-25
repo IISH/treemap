@@ -1,4 +1,4 @@
-package org.iish.treemap.model;
+package org.iish.treemap.model.tabular;
 
 import java.io.Serializable;
 import java.util.ArrayList;

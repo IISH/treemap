@@ -1,5 +1,6 @@
-package org.iish.treemap.model;
+package org.iish.treemap.model.treemap;
 
+import org.iish.treemap.model.tabular.TabularData;
 import org.iish.treemap.util.Utils;
 
 import java.math.BigDecimal;
@@ -13,10 +14,10 @@ public class TreemapBuilder {
     private TabularData table;
     private List<String> hierarchyColumns;
     private String sizeColumn;
-    private String emptyVal;
 
     private boolean roundSize;
     private String colorColumn;
+    private Map<String, String> emptyMap;
     private Map<String, String> suffixMap;
     private Map<String, String> multiples;
 
@@ -26,14 +27,15 @@ public class TreemapBuilder {
      * @param table            The dataset.
      * @param hierarchyColumns The columns that represent the hierarchy.
      * @param sizeColumn       The column that represents the size.
-     * @param emptyVal         The value to use for empty values in the treemap.
      */
-    public TreemapBuilder(TabularData table, List<String> hierarchyColumns, String sizeColumn, String emptyVal) {
+    public TreemapBuilder(TabularData table, List<String> hierarchyColumns, String sizeColumn) {
         this.table = table;
         this.hierarchyColumns = hierarchyColumns;
         this.sizeColumn = sizeColumn;
-        this.emptyVal = emptyVal;
+
         this.roundSize = false;
+        this.emptyMap = new HashMap<>();
+        this.suffixMap = new HashMap<>();
         this.multiples = new HashMap<>();
     }
 
@@ -44,6 +46,15 @@ public class TreemapBuilder {
      */
     public void setColorColumn(String colorColumn) {
         this.colorColumn = colorColumn;
+    }
+
+    /**
+     * Sets the map containing labels for empty hierarchies.
+     *
+     * @param emptyMap The empty map.
+     */
+    public void setEmptyMap(Map<String, String> emptyMap) {
+        this.emptyMap = emptyMap;
     }
 
     /**
@@ -99,15 +110,20 @@ public class TreemapBuilder {
         rows.stream()
                 .collect(Collectors.groupingBy(rowIndex -> {
                     String value = table.getValue(hierarchy, rowIndex);
-                    return (value != null) ? value : emptyVal;
+                    return (value != null) ? value : "";
                 }))
                 .forEach((key, rowIndexes) -> {
                     if (hierarchies.isEmpty())
                         addLeaf(originalHierarchy, hierarchy, key, rowIndexes, curBranch);
                     else {
-                        Composite nextBranch = new Composite(originalHierarchy, hierarchy, key);
+                        String name = key;
+                        if (key.isEmpty())
+                            name = getEmptyValue(originalHierarchy);
+
+                        Composite nextBranch = new Composite(originalHierarchy, hierarchy, name);
                         addSuffix(nextBranch, originalHierarchy);
                         addColor(nextBranch, rowIndexes);
+                        addEmpty(nextBranch, key.isEmpty());
 
                         addBranch(new LinkedList<>(hierarchies), rowIndexes, nextBranch);
 
@@ -115,8 +131,8 @@ public class TreemapBuilder {
                         boolean isSingleChild = (children.size() == 1);
                         Treemap singleChild = isSingleChild ? children.get(0) : null;
 
-                        boolean singleSameChild = (isSingleChild && singleChild.getName().equals(key));
-                        boolean singleEmptyChild = (isSingleChild && singleChild.getName().equals(emptyVal));
+                        boolean singleSameChild = (isSingleChild && singleChild.getName().equals(name));
+                        boolean singleEmptyChild = (isSingleChild && singleChild.isEmpty());
 
                         if (children.isEmpty() || singleEmptyChild)
                             addLeaf(originalHierarchy, hierarchy, key, rowIndexes, curBranch);
@@ -149,9 +165,14 @@ public class TreemapBuilder {
         if (roundSize)
             count = count.setScale(0, BigDecimal.ROUND_HALF_UP);
 
-        Leaf leaf = new Leaf(orgHierarchy, hierarchy, name, count);
+        String newName = name;
+        if (name.isEmpty())
+            newName = getEmptyValue(orgHierarchy);
+
+        Leaf leaf = new Leaf(orgHierarchy, hierarchy, newName, count);
         addSuffix(leaf, orgHierarchy);
         addColor(leaf, rows);
+        addEmpty(leaf, name.isEmpty());
 
         current.addChild(leaf);
     }
@@ -163,7 +184,7 @@ public class TreemapBuilder {
      * @param orgHierarchy The name of the current original hierarchy.
      */
     private void addSuffix(Treemap node, String orgHierarchy) {
-        if ((suffixMap != null) && suffixMap.containsKey(orgHierarchy))
+        if (suffixMap.containsKey(orgHierarchy))
             node.setSuffix(suffixMap.get(orgHierarchy));
     }
 
@@ -181,5 +202,25 @@ public class TreemapBuilder {
                     .collect(Collectors.joining(";"));
             node.setColor(colors);
         }
+    }
+
+    /**
+     * Make sure the treemap also contains information whether this is an empty node.
+     *
+     * @param node    The treemap.
+     * @param isEmpty Whether this is an empty value node.
+     */
+    private void addEmpty(Treemap node, boolean isEmpty) {
+        node.setEmpty(isEmpty);
+    }
+
+    /**
+     * Returns the value for an empty node for the current hierarchy.
+     *
+     * @param hierarchy The current hierarchy.
+     * @return The value.
+     */
+    private String getEmptyValue(String hierarchy) {
+        return emptyMap.getOrDefault(hierarchy, "-");
     }
 }

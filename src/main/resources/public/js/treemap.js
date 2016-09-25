@@ -605,7 +605,7 @@ function Treemap(d3) {
 
     var determineName = function (d) {
         var name = d.name;
-        if (d.suffix)
+        if (d.suffix && !d.isEmpty)
             name += (" " + d.suffix);
         return name;
     };

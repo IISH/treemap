@@ -1,4 +1,4 @@
-package org.iish.treemap.model;
+package org.iish.treemap.model.treemap;
 
 /**
  * A value in a legend.

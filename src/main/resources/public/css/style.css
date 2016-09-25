@@ -27,10 +27,16 @@ h1 {
 }
 
 #info {
+    font-size: 85%;
     font-style: italic;
 }
 
-#filters .checkbox-inline {
+#info p:last-child {
+    margin-bottom: 0;
+}
+
+#filters .checkbox-inline,
+#filters .buttons-inline {
     padding-top: 4px;
 }
 
@@ -49,6 +55,14 @@ h1 {
 #filters button {
     margin-top: 3px;
     margin-left: 20px;
+}
+
+#filters select.subfilter {
+    display: inline;
+    width: initial;
+    margin: 0 10px;
+    height: 20px;
+    padding: 0;
 }
 
 #values {

@@ -1,4 +1,4 @@
-package org.iish.treemap.model;
+package org.iish.treemap.model.treemap;
 
 /**
  * Represents filter information for a column in a dataset.

@@ -1,7 +1,7 @@
 package org.iish.treemap.labour;
 
 import org.iish.treemap.config.Config;
-import org.iish.treemap.model.LegendValue;
+import org.iish.treemap.model.treemap.LegendValue;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -44,7 +44,7 @@ public class LabourRelations {
 
         multipleLabel = config.labourRelations.multiple.label;
 
-        setUpLegend(config.labourRelations.level1);
+        setUpLegend(config.labourRelations.level1, config.worldPopulation);
     }
 
     /**
@@ -156,11 +156,13 @@ public class LabourRelations {
     /**
      * Sets up the legend.
      *
-     * @param source The configuration source.
+     * @param source          The configuration source.
+     * @param worldPopulation The worldPopulation configuration source.
      */
-    private void setUpLegend(List<Config.LabourRelationsLevel> source) {
+    private void setUpLegend(List<Config.LabourRelationsLevel> source, Config.WorldPopulation worldPopulation) {
         legend = new ArrayList<>();
         source.forEach(labourRelationsLevel ->
                 legend.add(new LegendValue(labourRelationsLevel.label, labourRelationsLevel.color)));
+        legend.add(new LegendValue(worldPopulation.label, worldPopulation.color));
     }
 }

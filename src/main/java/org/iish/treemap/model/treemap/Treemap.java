@@ -1,4 +1,4 @@
-package org.iish.treemap.model;
+package org.iish.treemap.model.treemap;
 
 /**
  * Representation of a treemap.
@@ -10,6 +10,7 @@ public abstract class Treemap {
 
     private String suffix;
     private String color;
+    private boolean isEmpty;
 
     /**
      * Creates a treemap.
@@ -85,5 +86,21 @@ public abstract class Treemap {
      */
     public void setColor(String color) {
         this.color = color;
+    }
+
+    /**
+     * Returns whether this node represents an empty node.
+     * @return Is an empty node.
+     */
+    public boolean isEmpty() {
+        return isEmpty;
+    }
+
+    /**
+     * Sets  whether this node represents an empty node.
+     * @param empty True if it is an empty node.
+     */
+    public void setEmpty(boolean empty) {
+        isEmpty = empty;
     }
 }

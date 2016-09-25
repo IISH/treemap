@@ -2,7 +2,7 @@ package org.iish.treemap.labour;
 
 import org.iish.treemap.config.Config;
 import org.iish.treemap.util.Utils;
-import org.iish.treemap.model.TabularData;
+import org.iish.treemap.model.tabular.TabularData;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class TimePeriods {
+    private String yearColumn;
     private List<TimePeriod> timePeriods;
-    private String empty;
 
     /**
      * Builds all time periods from the configuration.
@@ -24,10 +24,10 @@ public class TimePeriods {
      */
     @Inject
     private TimePeriods(Config config) {
+        this.yearColumn = config.labour.xlsx.columns.year;
         this.timePeriods = config.timePeriods.stream()
                 .map(timePeriod -> new TimePeriod(timePeriod.timePeriod, timePeriod.minYear, timePeriod.maxYear))
                 .collect(Collectors.toList());
-        this.empty = config.labour.treemap.empty;
     }
 
     /**
@@ -50,9 +50,9 @@ public class TimePeriods {
         Map<String, String> matchingTimePeriods = new LinkedHashMap<>();
         for (TimePeriod tp : timePeriods) {
             Optional<Integer> minYear = tabularData.getRows().stream()
-                    .filter(row -> Utils.getInteger(tabularData.getValue("year", row)) != null)
+                    .filter(row -> Utils.getInteger(tabularData.getValue(yearColumn, row)) != null)
                     .map(row -> {
-                        int year = Utils.getInteger(tabularData.getValue("year", row));
+                        int year = Utils.getInteger(tabularData.getValue(yearColumn, row));
                         int difference = Math.abs(tp.getTimePeriod() - year);
                         return new AbstractMap.SimpleEntry<>(year, difference);
                     })
@@ -62,7 +62,7 @@ public class TimePeriods {
             if (minYear.isPresent() && tp.isWithinTimePeriod(minYear.get()))
                 matchingTimePeriods.put(tp.getTimePeriodString(), String.valueOf(minYear.get()));
             else if (includeEmpty)
-                matchingTimePeriods.put(tp.getTimePeriodString(), empty);
+                matchingTimePeriods.put(tp.getTimePeriodString(), "-");
         }
         return matchingTimePeriods;
     }

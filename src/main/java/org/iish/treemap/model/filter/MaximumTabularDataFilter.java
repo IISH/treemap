@@ -1,5 +1,7 @@
-package org.iish.treemap.model;
+package org.iish.treemap.model.filter;
 
+import org.iish.treemap.model.tabular.TabularData;
+import org.iish.treemap.model.tabular.FilteredTabularData;
 import org.iish.treemap.util.Utils;
 
 import java.math.BigDecimal;
@@ -7,21 +9,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * A filter for datasets that filters out rows where a column does not contain values within a certain minimum value.
+ * A filter for datasets that filters out rows where a column does not contain values within a certain maximum value.
  */
-public class MinimalTabularDataFilter implements TabularDataFilter {
+public class MaximumTabularDataFilter implements TabularDataFilter {
     private String column;
-    private BigDecimal minimum;
+    private BigDecimal maximum;
 
     /**
-     * Creates a new minimum value filter.
+     * Creates a new maximum value filter.
      *
      * @param column  The name of the column to filter on.
-     * @param minimum The minimum value.
+     * @param maximum The maximum value.
      */
-    public MinimalTabularDataFilter(String column, BigDecimal minimum) {
+    public MaximumTabularDataFilter(String column, BigDecimal maximum) {
         this.column = column;
-        this.minimum = minimum;
+        this.maximum = maximum;
     }
 
     /**
@@ -35,7 +37,7 @@ public class MinimalTabularDataFilter implements TabularDataFilter {
         Set<Integer> filteredRows = data.getRows().stream()
                 .filter(row -> {
                     BigDecimal value = Utils.getBigDecimal(data.getValue(column, row));
-                    return ((value == null) || (value.compareTo(minimum) > 0));
+                    return ((value == null) || (value.compareTo(maximum) < 0));
                 })
                 .collect(Collectors.toSet());
         return new FilteredTabularData(data, filteredRows);

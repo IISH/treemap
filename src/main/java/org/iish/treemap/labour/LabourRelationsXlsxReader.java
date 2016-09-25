@@ -2,13 +2,16 @@ package org.iish.treemap.labour;
 
 import org.iish.treemap.config.Config;
 import org.iish.treemap.util.Utils;
-import org.iish.treemap.model.TabularData;
+import org.iish.treemap.model.tabular.TabularData;
 import org.iish.treemap.util.XlsxException;
 import org.iish.treemap.util.XlsxReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -16,6 +19,7 @@ import java.util.regex.Pattern;
  * A reader that parses Excel labour relations data sets.
  */
 public class LabourRelationsXlsxReader {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LabourRelationsXlsxReader.class);
     private static final Pattern HEADERS = Pattern.compile("[\\W]");
 
     private Config config;
@@ -113,17 +117,14 @@ public class LabourRelationsXlsxReader {
         });
 
         int i = row.lastColNumber;
-        for (String mul : Arrays.asList("", ".mul")) {
-            for (String x : Arrays.asList("1", "2", "3")) {
-                for (String y : Arrays.asList("1", "2", "3.ext")) {
-                    headers.put("txt" + x + "." + y + mul, i++);
-                }
+        for (Field field : config.labour.xlsx.virtualColumns.getClass().getFields()) {
+            try {
+                headers.put(field.get(config.labour.xlsx.virtualColumns).toString(), i++);
+            }
+            catch (IllegalAccessException iae) {
+                LOGGER.warn("Illegal access to virtual columns config class!", iae);
             }
         }
-
-        headers.put("color", i++);
-        headers.put("bmyear", i++);
-        headers.put("continent", i);
     }
 
     /**
