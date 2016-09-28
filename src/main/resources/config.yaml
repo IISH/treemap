@@ -162,7 +162,7 @@ labourRelations:
 
   # Combination of multiple labour relations
   multiple:
-    label: Either / Or
+    label: Either – Or
     color: "#517FB5"
 
 # Configuration of time periods (minYear including, maxYear excluding)

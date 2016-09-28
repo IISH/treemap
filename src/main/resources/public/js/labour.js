@@ -47,37 +47,46 @@
         updateValues(treemapInfo.filterInfo);
     });
 
-    treemap.onTransition(function (transistioning) {
-        filters.find('input,select').prop('disabled', transistioning);
-        var slider = filters.find('input.slider');
-        transistioning ? slider.slider('disable') : slider.slider('enable');
+    treemap.onTransition(function (transitioning) {
+        var elems = filters.find('input,select');
+        var buttons = filters.find('label.btn');
+        var sliders = filters.find('input.slider');
+        if (!transitioning) {
+            elems = elems.not('.keep-disabled');
+            buttons = buttons.not('.keep-disabled');
+            sliders = sliders.not('.keep-disabled');
+        }
+
+        elems.prop('disabled', transitioning);
+        transitioning ? buttons.addClass('disabled') : buttons.removeClass('disabled');
+        transitioning ? sliders.slider('disable') : sliders.slider('enable');
     });
 
     function filterForm(filterInfo) {
         var form = filters.html('<form class="form-horizontal"></form>').find('form');
 
         var html = '<div class="form-group form-group-sm">';
-        html += '<label class="col-sm-2 control-label""><strong>Either / Or ';
+        html += '<label class="col-sm-4 control-label""><strong>Ambiguous labour relations categories: Either – Or ';
         html += '<i class="glyphicon glyphicon-info-sign" title="' + getTitle('multiples') + '" ';
-        html += 'data-toggle="tooltip" data-placement="bottom"></i></strong></label>';
-        html += '<div class="col-sm-3 buttons-inline">';
-        html += '<div class="btn-group btn-group-xs btn-toggle" data-toggle="buttons">';
-        html += '<label class="btn btn-default">';
-        html += '<input type="radio" name="multiples" value="show"> Show individually';
-        html += '</label>';
-        html += '<label class="btn btn-default active">';
-        html += '<input type="radio" name="multiples" value="combine" checked=""> Combine';
-        html += '</label></div></div>';
-        html += '<label class="col-sm-2 control-label"><strong>Uncollected data ';
-        html += '<i class="glyphicon glyphicon-info-sign" title="' + getTitle('totalPopulation') + '" ';
         html += 'data-toggle="tooltip" data-placement="bottom"></i></strong></label>';
         html += '<div class="col-sm-2 buttons-inline">';
         html += '<div class="btn-group btn-group-xs btn-toggle" data-toggle="buttons">';
         html += '<label class="btn btn-default">';
-        html += '<input type="radio" name="totalPopulation" value="show"> Include';
+        html += '<input type="radio" name="multiples" value="show">Show separately';
         html += '</label>';
         html += '<label class="btn btn-default active">';
-        html += '<input type="radio" name="totalPopulation" value="combine" checked=""> Exclude';
+        html += '<input type="radio" name="multiples" value="combine" checked="">Combine';
+        html += '</label></div></div>';
+        html += '<label class="col-sm-3 control-label"><strong>World population: no data collected ';
+        html += '<i class="glyphicon glyphicon-info-sign" title="' + getTitle('totalPopulation') + '" ';
+        html += 'data-toggle="tooltip" data-placement="bottom"></i></strong></label>';
+        html += '<div class="col-sm-2 buttons-inline">';
+        html += '<div class="btn-group btn-group-xs btn-toggle" data-toggle="buttons">';
+        html += '<label class="btn btn-default totalPopulation include">';
+        html += '<input type="radio" name="totalPopulation" value="show">Include';
+        html += '</label>';
+        html += '<label class="btn btn-default totalPopulation exclude active">';
+        html += '<input type="radio" name="totalPopulation" value="hide" checked="">Exclude';
         html += '</label></div></div>';
         html += '</div>';
         form.append(html);
@@ -159,6 +168,22 @@
     function reload() {
         clearTimeout(updateTimeout);
         updateTimeout = setTimeout(function () {
+            var allowWorldPopulationInclude = true;
+            filters.find('form').serializeArray().forEach(function (elem) {
+                if ((elem.name.indexOf('filter:') === 0) &&
+                    (elem.name !== 'filter:bmyear') && (elem.name !== 'filter:continent')) {
+                    allowWorldPopulationInclude = false;
+                }
+            });
+
+            if (!allowWorldPopulationInclude) {
+                filters.find('form .totalPopulation.exclude').click();
+                filters.find('form .totalPopulation').addClass('keep-disabled');
+            }
+            else {
+                filters.find('form .totalPopulation').removeClass('keep-disabled');
+            }
+
             if (render) {
                 treemap.loadFromUrl(getTreemapUrlWithFilters(), function (treemapInfo) {
                     updateValues(treemapInfo.filterInfo);
@@ -218,7 +243,7 @@
     function getTitle(column, filter) {
         switch (column) {
             case 'multiples':
-                return 'Show the various combinations as individual blocks in the treemap, ' +
+                return 'Show ambiguous labour relation categories (e.g. ‘1 or 5’) as separate blocks in the treemap, ' +
                     'or just show a single block containing all combinations.';
             case 'totalPopulation':
                 return 'Include a block with uncollected data in the treemap or just show the collected data.';

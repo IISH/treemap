@@ -52,23 +52,26 @@ public class TotalPopulation {
     public TabularData enrichDataset(TabularData original) {
         ArrayList<String[]> data = new ArrayList<>();
 
+        Map<String, Map<String, List<Integer>>> yearContinentRows = new HashMap<>();
         original.getRows().stream()
                 .collect(Collectors.groupingBy(rowIdx -> original.getValue(yearColumn, rowIdx)))
-                .forEach((yearStr, yearRows) -> {
-                    Integer year = Utils.getInteger(yearStr);
-                    if (worldPopulation.totals.containsKey(year)) {
-                        Map<String, Number> continentTotals = worldPopulation.totals.get(year);
-
-                        yearRows.stream()
-                                .collect(Collectors.groupingBy(rowIdx -> original.getValue(continentColumn, rowIdx)))
-                                .forEach((continent, rows) -> {
-                                    if (continentTotals.containsKey(continent)) {
-                                        BigDecimal totalDataset = totalPopulationDataset(original, rows);
-                                        addToDataset(data, year, continent, totalDataset);
-                                    }
-                                });
-                    }
+                .forEach((year, rows) -> {
+                    Map<String, List<Integer>> continentRows = rows.stream()
+                            .collect(Collectors.groupingBy(rowIdx -> original.getValue(continentColumn, rowIdx)));
+                    yearContinentRows.put(year, continentRows);
                 });
+
+        worldPopulation.totals.forEach((year, continentTotals) -> {
+            continentTotals.forEach((continent, totalPopulation) -> {
+                BigDecimal totalDataset = BigDecimal.ZERO;
+                if (yearContinentRows.containsKey(year.toString())) {
+                    Map<String, List<Integer>> continentRows = yearContinentRows.get(year.toString());
+                    if (continentRows.containsKey(continent))
+                        totalDataset = totalPopulationDataset(original, continentRows.get(continent));
+                }
+                addToDataset(data, year, continent, totalDataset);
+            });
+        });
 
         data.trimToSize();
         TabularData extension = new TabularData(headers, data);
