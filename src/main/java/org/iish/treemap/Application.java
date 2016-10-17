@@ -100,7 +100,7 @@ public class Application implements SparkApplication {
      * The provided dataset should be loaded into memory.
      */
     private void loadIntoMemory() {
-        String path = System.getProperty("dataset", null);
+        String path = System.getProperty("treemap.dataset", null);
         if ((path != null) && new File(path).exists()) {
             LOGGER.info("Attempting to load dataset from " + path);
 

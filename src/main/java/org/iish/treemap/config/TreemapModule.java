@@ -37,7 +37,7 @@ public class TreemapModule extends AbstractModule {
     @Singleton
     public Config providesConfig() {
         try {
-            String configPath = System.getProperty("config");
+            String configPath = System.getProperty("treemap.config");
             LOGGER.info("Loading configuration from {}.", configPath);
 
             Yaml yaml = new Yaml(new Constructor(Config.class));
