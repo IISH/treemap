@@ -600,7 +600,7 @@ function Treemap(d3, maxNoHierarchies) {
         var svg = $('svg')
             .attr("version", 1.1)
             .attr("xmlns", "http://www.w3.org/2000/svg")[0].outerHTML;
-        return 'data:image/svg+xml;base64,' + btoa(svg);
+        return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
     };
 
     var downloadData = function (filename, data) {
