@@ -607,6 +607,8 @@ function Treemap(d3, maxNoHierarchies) {
         var a = document.createElement('a');
         a.download = filename;
         a.href = data;
+        a.setAttribute('type', 'hidden');
+        document.body.appendChild(a);
         a.click();
     };
 
