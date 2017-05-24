@@ -6,6 +6,7 @@ import org.iish.treemap.model.treemap.LegendValue;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -17,11 +18,14 @@ public class LabourRelations {
     private Map<String, String> level2;
     private Map<String, String> level3;
     private Map<String, String> colors;
+    private Map<String, String> codes;
 
     private String unknownLabel;
     private String unknownColor;
+    private String unknownCode;
 
     private String multipleLabel;
+    private String multipleCode;
 
     private List<LegendValue> legend;
 
@@ -34,15 +38,18 @@ public class LabourRelations {
     public LabourRelations(Config config) {
         level3 = new HashMap<>(config.labourRelations.codes);
 
-        level1 = setUpFor(config.labourRelations.level1, true);
-        level2 = setUpFor(config.labourRelations.level2, true);
+        level1 = setUpFor(config.labourRelations.level1, lr -> lr.label);
+        level2 = setUpFor(config.labourRelations.level2, lr -> lr.label);
 
-        colors = setUpFor(config.labourRelations.level1, false);
+        colors = setUpFor(config.labourRelations.level1, lr -> lr.color);
+        codes = setUpFor(config.labourRelations.level1, lr -> lr.code);
 
         unknownLabel = config.labourRelations.unknown.label;
         unknownColor = config.labourRelations.unknown.color;
+        unknownCode = config.labourRelations.unknown.code;
 
         multipleLabel = config.labourRelations.multiple.label;
+        multipleCode = config.labourRelations.multiple.code;
 
         setUpLegend(config.labourRelations.level1, config.worldPopulation);
     }
@@ -91,6 +98,17 @@ public class LabourRelations {
     }
 
     /**
+     * For the given labour relation values, return the code.
+     *
+     * @param values           The labour relation values separated by a 0.
+     * @param combineMultiples Whether to combine all multiples.
+     * @return The labour relation code.
+     */
+    public String getCode(String values, boolean combineMultiples) {
+        return getMapping(values, codes, unknownCode, combineMultiples ? null : multipleCode, ",");
+    }
+
+    /**
      * Returns the labour relations legend.
      *
      * @return The legend.
@@ -133,10 +151,11 @@ public class LabourRelations {
      * Sets up a labour relation level mapping for the given configuration.
      *
      * @param source The configuration source.
-     * @param label  Use the label value, rather than the color value.
+     * @param forLevel Lamda which returns the required value from the given labour relation level.
      * @return The labour relation level mapping.
      */
-    private Map<String, String> setUpFor(List<Config.LabourRelationsLevel> source, boolean label) {
+    private Map<String, String> setUpFor(
+            List<Config.LabourRelationsLevel> source, Function<Config.LabourRelationsLevel, String> forLevel) {
         Map<String, String> target = new HashMap<>();
         source.forEach(labourRelationsLevel -> {
             int min = labourRelationsLevel.range[0];
@@ -146,7 +165,7 @@ public class LabourRelations {
                 String cleanKey = key.replaceAll("[^0-9]", "");
                 int code = Integer.parseInt(cleanKey.substring(0, Math.min(2, cleanKey.length())));
                 if ((code >= min) && (code <= max)) {
-                    target.put(key, label ? labourRelationsLevel.label : labourRelationsLevel.color);
+                    target.put(key, forLevel.apply(labourRelationsLevel));
                 }
             });
         });
@@ -162,7 +181,8 @@ public class LabourRelations {
     private void setUpLegend(List<Config.LabourRelationsLevel> source, Config.WorldPopulation worldPopulation) {
         legend = new ArrayList<>();
         source.forEach(labourRelationsLevel ->
-                legend.add(new LegendValue(labourRelationsLevel.label, labourRelationsLevel.color)));
-        legend.add(new LegendValue(worldPopulation.label, worldPopulation.color));
+                legend.add(new LegendValue(
+                        labourRelationsLevel.label, labourRelationsLevel.color, labourRelationsLevel.code)));
+        legend.add(new LegendValue(worldPopulation.label, worldPopulation.color, worldPopulation.code));
     }
 }

@@ -57,6 +57,7 @@ public class Config {
         public String labRel31;
         public String labRel32;
         public String labRel33;
+        public String code;
         public String labRelMultiple11;
         public String labRelMultiple12;
         public String labRelMultiple13;
@@ -66,6 +67,7 @@ public class Config {
         public String labRelMultiple31;
         public String labRelMultiple32;
         public String labRelMultiple33;
+        public String codeMultiple;
         public String color;
         public String bmyear;
         public String continent;
@@ -92,6 +94,7 @@ public class Config {
     public static class LabourRelationsLevel {
         public String label;
         public String color;
+        public String code;
         public int[] range;
     }
 
@@ -104,6 +107,7 @@ public class Config {
     public static class WorldPopulation {
         public String label;
         public String color;
+        public String code;
         public Map<Integer, Map<String, Number>> totals;
     }
 }

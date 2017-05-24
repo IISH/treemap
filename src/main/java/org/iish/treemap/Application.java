@@ -140,7 +140,7 @@ public class Application implements SparkApplication {
             );
             TabularData data = xlsxReader.getData();
 
-            String path = System.getProperty("dataset", null);
+            String path = System.getProperty("treemap.dataset", null);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(path));
             objectOutputStream.writeObject(data);
             objectOutputStream.close();

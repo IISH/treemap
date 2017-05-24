@@ -34,6 +34,7 @@ labour:
       labRel31: txt3.1
       labRel32: txt3.2
       labRel33: txt3.3.ext
+      code: code
       labRelMultiple11: txt1.1.mul
       labRelMultiple12: txt1.2.mul
       labRelMultiple13: txt1.3.ext.mul
@@ -43,6 +44,7 @@ labour:
       labRelMultiple31: txt3.1.mul
       labRelMultiple32: txt3.2.mul
       labRelMultiple33: txt3.3.ext.mul
+      codeMultiple: code.mul
       color: color
       bmyear: bmyear
       continent: continent
@@ -70,6 +72,7 @@ labour:
       txt3.1: txt3.1.mul
       txt3.2: txt3.2.mul
       txt3.3.ext: txt3.3.ext.mul
+      code: code.mul
 
 # Labour relations code translation
 labourRelations:
@@ -113,21 +116,25 @@ labourRelations:
   level1:
     - label: Non-working
       color: "#9BCB41"
+      code: N
       range:
         - 1
         - 3
     - label: Reciprocal labour
       color: "#E77347"
+      code: R
       range:
         - 4
         - 7
     - label: Tributary labour
       color: "#F389AB"
+      code: T
       range:
         - 8
         - 11
     - label: Commodified labour
       color: "#24B186"
+      code: C
       range:
         - 12
         - 18
@@ -158,11 +165,13 @@ labourRelations:
   # Unknown labour relations
   unknown:
     label: Unknown
+    code: "?"
     color: "#CFD7E7"
 
   # Combination of multiple labour relations
   multiple:
     label: Either – Or
+    code: M
     color: "#517FB5"
 
 # Configuration of time periods (minYear including, maxYear excluding)
@@ -194,6 +203,7 @@ timePeriods:
 # Configuration of world population by year and continent
 worldPopulation:
   label: No data collected
+  code: X
   color: "#F9C81F"
   totals:
     1500:

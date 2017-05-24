@@ -10,6 +10,7 @@ public abstract class Treemap {
 
     private String suffix;
     private String color;
+    private String code;
     private boolean isEmpty;
 
     /**
@@ -89,7 +90,26 @@ public abstract class Treemap {
     }
 
     /**
+     * Returns the code of the current hierarchy.
+     *
+     * @return The code.
+     */
+    public String getCode() {
+        return code;
+    }
+
+    /**
+     * Sets the code of the current hierarchy.
+     *
+     * @param code The code.
+     */
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    /**
      * Returns whether this node represents an empty node.
+     *
      * @return Is an empty node.
      */
     public boolean isEmpty() {
@@ -98,6 +118,7 @@ public abstract class Treemap {
 
     /**
      * Sets  whether this node represents an empty node.
+     *
      * @param empty True if it is an empty node.
      */
     public void setEmpty(boolean empty) {

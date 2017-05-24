@@ -17,6 +17,7 @@ public class TreemapBuilder {
 
     private boolean roundSize;
     private String colorColumn;
+    private String codeColumn;
     private Map<String, String> emptyMap;
     private Map<String, String> suffixMap;
     private Map<String, String> multiples;
@@ -85,6 +86,15 @@ public class TreemapBuilder {
     }
 
     /**
+     * Sets the column that represents the code to use.
+     *
+     * @param codeColumn The column for codes.
+     */
+    public void setCodeColumn(String codeColumn) {
+        this.codeColumn = codeColumn;
+    }
+
+    /**
      * Returns the created treemap with the given name.
      *
      * @param name The name of the treemap.
@@ -123,6 +133,7 @@ public class TreemapBuilder {
                         Composite nextBranch = new Composite(originalHierarchy, hierarchy, name);
                         addSuffix(nextBranch, originalHierarchy);
                         addColor(nextBranch, rowIndexes);
+                        addCode(nextBranch, rowIndexes);
                         addEmpty(nextBranch, key.isEmpty());
 
                         addBranch(new LinkedList<>(hierarchies), rowIndexes, nextBranch);
@@ -172,6 +183,7 @@ public class TreemapBuilder {
         Leaf leaf = new Leaf(orgHierarchy, hierarchy, newName, count);
         addSuffix(leaf, orgHierarchy);
         addColor(leaf, rows);
+        addCode(leaf, rows);
         addEmpty(leaf, name.isEmpty());
 
         current.addChild(leaf);
@@ -201,6 +213,23 @@ public class TreemapBuilder {
                     .distinct()
                     .collect(Collectors.joining(";"));
             node.setColor(colors);
+        }
+    }
+
+    /**
+     * If there is a code defined for this hierarchy, add this information to the treemap.
+     *
+     * @param node The treemap.
+     * @param rows The table rows.
+     */
+    private void addCode(Treemap node, List<Integer> rows) {
+        if (codeColumn != null) {
+            String codes = rows.stream()
+                    .flatMap(rowIndex -> Arrays.stream(
+                            table.getValue(multiples.getOrDefault(codeColumn, codeColumn), rowIndex).split(",")))
+                    .distinct()
+                    .collect(Collectors.joining(","));
+            node.setCode(codes);
         }
     }
 

@@ -15,6 +15,10 @@
         treemap.downloadPNG('treemap.png');
     });
 
+    $('.download.grey').click(function () {
+        treemap.downloadGrey('treemap.png');
+    });
+
     $('.close').click(function () {
         $('#info').slideUp();
     });

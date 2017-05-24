@@ -90,6 +90,7 @@ function Treemap(d3, maxNoHierarchies) {
             .attr("y", 6)
             .attr("dy", ".75em")
             .attr("text-anchor", "end")
+            .attr("class", "help-one-up")
             .text("Click to move one level up")
             .style("font-style", "italic")
             .style("font-size", "12px");
@@ -133,10 +134,12 @@ function Treemap(d3, maxNoHierarchies) {
     };
 
     this.downloadSVG = function (name) {
-        downloadData(name, getSvgData());
+        downloadData(name, getSvgData(false));
     };
 
-    this.downloadPNG = function (name) {
+    this.downloadPNG = function (name, grey) {
+        grey = !!grey;
+
         var canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
@@ -146,9 +149,26 @@ function Treemap(d3, maxNoHierarchies) {
 
         image.onload = function () {
             context.drawImage(image, 0, 0);
+
+            if (grey) {
+                var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                var data  = imageData.data;
+                for (var i = 0, n = data.length; i < n; i += 4) {
+                    var greyscale = data[i] * .3 + data[i+1] * .59 + data[i+2] * .11;
+                    data[i  ] = greyscale;
+                    data[i+1] = greyscale;
+                    data[i+2] = greyscale;
+                }
+                context.putImageData(imageData, 0, 0);
+            }
+
             downloadData(name, canvas.toDataURL('image/png'));
         };
-        image.src = getSvgData();
+        image.src = getSvgData(grey);
+    };
+
+    this.downloadGrey = function (name) {
+        this.downloadPNG(name, true);
     };
 
     // -------------------------------------------------------------------------------------------------------- //
@@ -345,7 +365,7 @@ function Treemap(d3, maxNoHierarchies) {
         newBoxes.append("text")
             .attr("dy", ".75em")
             .text(function (d) {
-                return determineName(d);
+                return determineName(d, false);
             });
 
         boxes.filter(function (d) {
@@ -498,7 +518,7 @@ function Treemap(d3, maxNoHierarchies) {
                 });
             })
             .text(function (d) {
-                return determineName(d);
+                return determineName(d, false);
             });
 
         information.selectAll()
@@ -571,7 +591,7 @@ function Treemap(d3, maxNoHierarchies) {
                 });
             })
             .text(function (d2) {
-                return determineName(d) + " / " + determineName(d2);
+                return determineName(d, false) + " / " + determineName(d2, false);
             });
 
         information.selectAll()
@@ -596,11 +616,59 @@ function Treemap(d3, maxNoHierarchies) {
         information.selectAll("*:not(.back)").remove();
     };
 
-    var getSvgData = function () {
+    var setExportFilter = function (grey) {
+        oneUp.select('.help-one-up').style('visibility', 'hidden');
+
+        if (grey) {
+            legend.selectAll('text').text(function (d) {
+                if (d.code)
+                    return d.label + ' (' + d.code + ')';
+                return d.label;
+            });
+
+            depth.selectAll('text')
+                .text(function (d) {
+                    return determineName(d, true);
+                })
+                .style({
+                    'stroke-width': '0',
+                    'font-size': '64px',
+                    'font-weight': 'bold'
+                });
+        }
+    };
+
+    var resetExportFilter = function (grey) {
+        oneUp.select('.help-one-up').style('visibility', 'visible');
+
+        if (grey) {
+            legend.selectAll('text').text(function (d) {
+                return d.label;
+            });
+
+            depth.selectAll('text')
+                .text(function (d) {
+                    return determineName(d, false);
+                })
+                .style({
+                    'stroke-width': '2px',
+                    'font-size': '12px',
+                    'font-weight': 'normal'
+                });
+        }
+    };
+
+    var getSvgData = function (grey) {
+        setExportFilter(grey);
+
         var svg = $('svg')
             .attr("version", 1.1)
             .attr("xmlns", "http://www.w3.org/2000/svg")[0].outerHTML;
-        return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+        var base64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+
+        resetExportFilter(grey);
+
+        return base64;
     };
 
     var downloadData = function (filename, data) {
@@ -657,7 +725,7 @@ function Treemap(d3, maxNoHierarchies) {
     };
 
     var name = function (d) {
-        return d.parent ? name(d.parent) + ' / ' + determineName(d) : determineName(d);
+        return d.parent ? name(d.parent) + ' / ' + determineName(d, false) : determineName(d, false);
     };
 
     var hide = function (d) {
@@ -674,7 +742,11 @@ function Treemap(d3, maxNoHierarchies) {
         });
     };
 
-    var determineName = function (d) {
+    var determineName = function (d, useCode) {
+        if (d.code && useCode) {
+            return d.code;
+        }
+
         var name = d.name;
         if (d.suffix && !d.isEmpty)
             name += (" " + d.suffix);

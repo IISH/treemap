@@ -162,6 +162,7 @@ public class LabourRelationsXlsxReader {
                         rowData.add(labourRelations.getLevel2(value, combineMultiples));
                         rowData.add(labourRelations.getLevel3(value, combineMultiples));
                     }
+                    rowData.add(labourRelations.getCode(labourRelation1Val, combineMultiples));
                 }
 
                 rowData.add(labourRelations.getColor(labourRelation1Val));
@@ -204,12 +205,13 @@ public class LabourRelationsXlsxReader {
      */
     private String getTimePeriod(String year) {
         Integer yearInt = Utils.getInteger(year);
-        if (yearInt != null) {
-            Optional<TimePeriod> timePeriod = this.timePeriods.getTimePeriods().stream()
-                    .filter(tp -> tp.isWithinTimePeriod(yearInt))
-                    .findFirst();
-            return timePeriod.isPresent() ? timePeriod.get().getTimePeriodString() : null;
-        }
-        return null;
+        if (yearInt == null)
+            return null;
+
+        return this.timePeriods.getTimePeriods().stream()
+                .filter(tp -> tp.isWithinTimePeriod(yearInt))
+                .findFirst()
+                .map(TimePeriod::getTimePeriodString)
+                .orElse(null);
     }
 }

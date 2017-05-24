@@ -6,16 +6,19 @@ package org.iish.treemap.model.treemap;
 public class LegendValue {
     private String label;
     private String color;
+    private String code;
 
     /**
      * Creates a new legend value.
      *
      * @param label The label.
      * @param color The color.
+     * @param code  The code.
      */
-    public LegendValue(String label, String color) {
+    public LegendValue(String label, String color, String code) {
         this.label = label;
         this.color = color;
+        this.code = code;
     }
 
     /**
@@ -52,5 +55,23 @@ public class LegendValue {
      */
     public void setColor(String color) {
         this.color = color;
+    }
+
+    /**
+     * Returns the legend code label.
+     *
+     * @return The legend code label.
+     */
+    public String getCode() {
+        return code;
+    }
+
+    /**
+     * Sets the legend code label.
+     *
+     * @param code The legend code label.
+     */
+    public void setCode(String code) {
+        this.code = code;
     }
 }

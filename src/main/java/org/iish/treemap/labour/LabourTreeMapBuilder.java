@@ -249,6 +249,7 @@ public class LabourTreeMapBuilder {
         TreemapBuilder treemapBuilder = new TreemapBuilder(data, hierarchy, request.queryParams("size"));
         treemapBuilder.setRoundSize(true);
         treemapBuilder.setColorColumn(config.labour.xlsx.virtualColumns.color);
+        treemapBuilder.setCodeColumn(config.labour.xlsx.virtualColumns.code);
         treemapBuilder.setEmptyMap(config.labour.treemap.empty);
         treemapBuilder.setSuffixMap(config.labour.treemap.suffix);
 
