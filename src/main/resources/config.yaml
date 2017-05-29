@@ -116,7 +116,7 @@ labourRelations:
   level1:
     - label: Non-working
       color: "#9BCB41"
-      code: N
+      code: NW
       range:
         - 1
         - 3

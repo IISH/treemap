@@ -228,7 +228,7 @@ public class TreemapBuilder {
                     .flatMap(rowIndex -> Arrays.stream(
                             table.getValue(multiples.getOrDefault(codeColumn, codeColumn), rowIndex).split(",")))
                     .distinct()
-                    .collect(Collectors.joining(","));
+                    .collect(Collectors.joining(" or "));
             node.setCode(codes);
         }
     }
