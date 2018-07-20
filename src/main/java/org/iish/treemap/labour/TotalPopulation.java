@@ -41,6 +41,7 @@ public class TotalPopulation {
         headers.put(config.labour.xlsx.virtualColumns.color, 3);
         headers.put(config.labour.xlsx.virtualColumns.labRel11, 4);
         headers.put(config.labour.xlsx.virtualColumns.labRelMultiple11, 5);
+        headers.put(config.labour.xlsx.virtualColumns.code, 6);
     }
 
     /**
@@ -117,6 +118,7 @@ public class TotalPopulation {
         row[2] = missingSize.toString();
         row[3] = worldPopulation.color;
         row[4] = row[5] = worldPopulation.label;
+        row[6] = worldPopulation.code;
 
         data.add(row);
     }
