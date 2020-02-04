@@ -3,7 +3,7 @@ key: MoQx74NBnJlkP0Av3R
 
 # Dataverse API configuration
 dataverse:
-  url: https://datasets.socialhistory.org
+  url: https://datasets.iisg.amsterdam
   connectTimeoutMs: 5000
   readTimeoutMs: 10000
 
